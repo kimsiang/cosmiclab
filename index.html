@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmic Lab — Detect Cosmic Rays with Python</title>
+<meta name="description" content="A 1-day online masterclass where Malaysian high schoolers analyse real muon detector data with Python — live proof of Einstein's relativity.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═════════════════════════════════════════════════════════
+   COSMIC LAB — single design system
+   Deep navy · Playfair headlines · Inter body · hairlines ·
+   electric-blue CTA · cyan accent · massive whitespace
+   ═════════════════════════════════════════════════════════ */
+:root{
+  --navy:#EDF4FD;          /* base — ice blue */
+  --navy-2:#FFFFFF;        /* alternate section — white */
+  --navy-3:#0341B3;        /* royal blue (quote, footer) */
+  --blue:#2251FF;          /* electric blue — CTA only */
+  --blue-hover:#1A40D8;
+  --cyan:#1D6DE5;          /* accent — data, italics, figures */
+  --orange:#F26400;        /* warm accent fill — badges, pulses */
+  --orange-text:#C7530A;   /* orange for text on light bg */
+  --ink:#0A1F3C;
+  --body:#33506B;
+  --muted:#5A7590;
+  --faint:#64809B;
+  --line:rgba(10,31,60,.20);         /* 1px hairline @ ~50% perceived */
+  --line-soft:rgba(10,31,60,.09);
+  --maxw:1140px;
+  --pad:clamp(24px,7vw,84px);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+::selection{background:rgba(34,81,255,.22);color:var(--ink);}
+body{
+  background:linear-gradient(180deg,#F8FBFF 0%,#E4EFFD 40%,#D3E6FB 100%);
+  background-attachment:fixed;
+  color:var(--body);
+  font-family:'Inter',sans-serif;
+  font-weight:300;
+  font-size:16px;
+  line-height:1.75;
+  letter-spacing:.005em;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:2px;}
+img,svg{display:block;max-width:100%;}
+
+/* ── Type roles ── */
+.serif{font-family:'Playfair Display',Georgia,serif;}
+.mono{font-family:'DM Mono',monospace;}
+.eyebrow{
+  font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--orange-text);margin-bottom:20px;display:flex;align-items:center;gap:14px;
+}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--orange-text);opacity:.9;}
+.stitle{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(30px,4.4vw,50px);font-weight:600;line-height:1.12;
+  letter-spacing:-.01em;color:var(--ink);margin-bottom:18px;
+}
+.stitle em{font-style:italic;font-weight:500;color:var(--cyan);}
+.sdesc{font-size:16.5px;color:var(--muted);max-width:560px;line-height:1.75;}
+.sdesc strong{color:var(--ink);font-weight:500;}
+
+/* ── Layout ── */
+.sec{padding:clamp(88px,11vw,140px) 0;position:relative;}
+.sec + .sec::before{
+  content:"";position:absolute;top:0;left:var(--pad);right:var(--pad);
+  height:1px;background:var(--line-soft);
+}
+.alt{background:var(--navy-2);}
+.alt::before{left:0!important;right:0!important;}
+.con{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad);}
+.shead{max-width:640px;margin-bottom:clamp(44px,6vw,72px);}
+
+/* thin → arrow, bottom-right of each section */
+.sec-arrow{
+  position:absolute;bottom:34px;right:var(--pad);
+  font-weight:200;font-size:22px;color:var(--faint);
+  line-height:1;user-select:none;pointer-events:none;letter-spacing:.1em;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line-soft);
+  height:72px;display:flex;align-items:center;
+}
+.nav-in{max-width:var(--maxw);width:100%;margin:0 auto;padding:0 var(--pad);
+  display:flex;justify-content:space-between;align-items:center;}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none;}
+.logo-mark{width:26px;height:26px;position:relative;flex-shrink:0;}
+.logo-mark svg{width:100%;height:100%;}
+.logo-name{font-size:15px;font-weight:500;color:var(--ink);letter-spacing:.01em;}
+.logo-name span{color:var(--cyan);}
+.nav-links{display:flex;align-items:center;gap:30px;}
+.nl{font-size:13.5px;font-weight:400;color:var(--muted);text-decoration:none;transition:color .2s;}
+.nl:hover{color:var(--ink);}
+.lang-sw{display:flex;align-items:center;gap:2px;}
+.lang-btn{
+  background:none;border:none;font-family:'Inter',sans-serif;font-size:12px;
+  font-weight:500;color:var(--faint);cursor:pointer;padding:5px 7px;
+  border-bottom:1px solid transparent;transition:all .15s;
+}
+.lang-btn:hover{color:var(--ink);}
+.lang-btn.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+.lang-sep{color:var(--line);font-size:11px;user-select:none;}
+.ncta{
+  background:var(--blue);color:#fff;font-size:13.5px;font-weight:500;
+  padding:11px 24px;border:none;cursor:pointer;text-decoration:none;
+  letter-spacing:.01em;transition:background .2s;border-radius:8px;
+  box-shadow:0 6px 16px rgba(34,81,255,.24);
+}
+.ncta:hover{background:var(--blue-hover);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100svh;position:relative;display:flex;align-items:center;
+  padding:130px 0 90px;overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(rgba(34,81,255,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(34,81,255,.06) 1px,transparent 1px);
+  background-size:52px 52px;
+  -webkit-mask-image:radial-gradient(ellipse 90% 75% at 50% 38%,black 30%,transparent 78%);
+  mask-image:radial-gradient(ellipse 90% 75% at 50% 38%,black 30%,transparent 78%);
+}
+#cosray{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.hero-fade{display:none;}
+.hero-inner{
+  max-width:var(--maxw);width:100%;margin:0 auto;padding:0 var(--pad);
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:clamp(40px,6vw,90px);align-items:center;position:relative;z-index:2;
+}
+.hero-badge{
+  display:inline-block;background:linear-gradient(135deg,#FF7A1A,#F05E00);border:none;color:#fff;
+  box-shadow:0 6px 18px rgba(242,100,0,.32);
+  font-size:10.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  padding:7px 16px;border-radius:100px;margin-bottom:30px;
+}
+.hero h1{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(44px,6.6vw,84px);font-weight:700;line-height:1.04;
+  color:var(--ink);letter-spacing:-.015em;margin-bottom:24px;
+}
+.hero h1 em{font-style:italic;font-weight:600;color:var(--cyan);}
+.hero-sub{
+  font-size:clamp(16px,1.6vw,18.5px);color:var(--body);line-height:1.72;
+  max-width:480px;margin-bottom:38px;font-weight:300;
+}
+.hero-sub strong{color:var(--ink);font-weight:500;}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:56px;align-items:center;}
+.btn-p{
+  background:var(--blue);color:#fff;font-weight:500;font-size:15px;
+  padding:16px 32px;border:none;border-radius:8px;cursor:pointer;
+  box-shadow:0 10px 26px rgba(34,81,255,.28);
+  text-decoration:none;display:inline-flex;align-items:center;gap:12px;
+  transition:background .2s;letter-spacing:.01em;
+}
+.btn-p::after{content:"→";font-weight:300;transition:transform .25s;}
+.btn-p:hover{background:var(--blue-hover);}
+.btn-p:hover::after{transform:translateX(4px);}
+.btn-s{
+  color:var(--ink);font-weight:400;font-size:15px;padding:16px 6px;
+  border:none;border-bottom:1px solid var(--line);background:transparent;
+  cursor:pointer;text-decoration:none;transition:all .2s;
+}
+.btn-s:hover{color:var(--cyan);border-bottom-color:var(--cyan);}
+/* stat strip — hairline rules only */
+.hstats{display:flex;border-top:1px solid var(--line);}
+.hs{flex:1;padding:22px 22px 0 0;border-right:1px solid var(--line-soft);}
+.hs+.hs{padding-left:22px;}
+.hs:last-child{border-right:none;padding-right:0;}
+.hsv{
+  font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:600;
+  font-size:clamp(21px,2.2vw,27px);color:var(--ink);display:block;line-height:1.15;
+}
+.hsl{
+  font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);margin-top:6px;display:block;
+}
+.hero-illus{position:relative;}
+.illus-cap{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;
+  color:var(--faint);margin-top:14px;padding-top:12px;
+  border-top:1px solid var(--line-soft);
+}
+
+/* ── Two-column science / detector sections ── */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(44px,6vw,88px);align-items:center;}
+.split .fig{min-width:0;}
+.prose h3{
+  font-size:17px;font-weight:500;color:var(--ink);margin:26px 0 8px;letter-spacing:-.005em;
+}
+.prose p{font-size:15.5px;color:var(--muted);line-height:1.8;}
+.prose p+p{margin-top:12px;}
+.prose strong{color:var(--ink);font-weight:500;}
+.prose em{color:var(--cyan);font-style:italic;}
+.callout{
+  border-left:2px solid var(--cyan);padding:4px 0 4px 22px;margin-top:26px;
+}
+.callout p{font-size:15px;color:rgba(10,31,60,.78);line-height:1.75;font-weight:300;}
+.side-note{
+  font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+  color:var(--faint);display:inline-block;margin-top:26px;
+  padding:6px 0;border-top:1px solid var(--line-soft);
+}
+.bm-line{
+  font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:500;
+  font-size:19px;color:var(--cyan);margin-top:30px;line-height:1.5;
+}
+.bm-sub{font-size:13.5px;color:var(--faint);margin-top:6px;}
+
+/* ── Steps (editorial rows, not cards) ── */
+.steps{border-top:1px solid var(--line);}
+.step{
+  display:grid;grid-template-columns:110px 1fr auto;gap:clamp(18px,4vw,54px);
+  padding:34px 0;border-bottom:1px solid var(--line-soft);align-items:baseline;
+  transition:border-color .3s;
+}
+.step:hover .step-n{color:var(--cyan);}
+.step-n{
+  font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:500;
+  font-size:34px;color:var(--faint);line-height:1;transition:color .3s;
+}
+.step-t{font-size:17.5px;font-weight:500;color:var(--ink);margin-bottom:7px;letter-spacing:-.005em;}
+.step-d{font-size:14.5px;color:var(--muted);line-height:1.7;max-width:560px;}
+.step-tag{
+  font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--cyan);white-space:nowrap;
+}
+
+/* ── Feature list (detector) ── */
+.flist{list-style:none;display:flex;flex-direction:column;margin:26px 0 30px;border-top:1px solid var(--line-soft);}
+.flist li{display:flex;gap:20px;padding:18px 0;border-bottom:1px solid var(--line-soft);font-size:14.5px;line-height:1.7;color:var(--muted);}
+.fic{width:34px;height:34px;flex-shrink:0;color:var(--cyan);margin-top:2px;}
+.fic svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.1;}
+.flb strong{color:var(--ink);font-weight:500;}
+
+/* ── Schedule ── */
+.swrap{border-top:1px solid var(--line);}
+.srow{
+  display:grid;grid-template-columns:130px 1fr;gap:clamp(18px,4vw,50px);
+  padding:28px 0;border-bottom:1px solid var(--line-soft);
+}
+.stm{
+  font-family:'DM Mono',monospace;font-size:13px;color:var(--cyan);
+  letter-spacing:.04em;padding-top:3px;
+}
+.stit{font-size:16.5px;font-weight:500;color:var(--ink);margin-bottom:5px;}
+.sdsc{font-size:14px;color:var(--muted);line-height:1.7;max-width:620px;}
+.spills{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;}
+.sp{
+  font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint);
+}
+.sp:not(:last-child)::after{content:"·";margin-left:14px;color:var(--line);}
+
+/* ── Quote ── */
+.quote-sec{background:linear-gradient(160deg,#0341B3 0%,#01254F 100%);}
+.quote-sec .qt{color:#fff;}
+.quote-sec .qm{color:#9CC4FF;opacity:.7;}
+.quote-sec .qa{color:rgba(255,255,255,.55);}
+.quote-sec .qa::before{background:#9CC4FF;}
+.quote-sec .qa span{color:#CDEEFF;}
+.qi{max-width:760px;margin:0 auto;padding:clamp(92px,11vw,144px) var(--pad);text-align:left;}
+.qm{
+  font-family:'Playfair Display',Georgia,serif;font-size:84px;line-height:.6;
+  color:var(--cyan);opacity:.45;margin-bottom:26px;
+}
+.qt{
+  font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:500;
+  font-size:clamp(20px,2.7vw,29px);color:var(--ink);line-height:1.55;margin-bottom:30px;
+}
+.qa{
+  font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);display:flex;align-items:center;gap:14px;
+}
+.qa::before{content:"";width:28px;height:1px;background:var(--cyan);}
+.qa span{color:var(--cyan);}
+
+/* ── Benefits (hairline grid) ── */
+.benefits-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.benefit-card{
+  padding:32px 28px 36px;background:#fff;border-radius:16px;
+  box-shadow:0 8px 28px rgba(10,31,60,.07);
+  transition:transform .25s,box-shadow .25s;
+}
+.benefit-card:hover{transform:translateY(-4px);box-shadow:0 16px 38px rgba(10,31,60,.11);}
+.benefit-icon{width:30px;height:30px;color:var(--cyan);margin-bottom:20px;}
+.benefit-icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.1;}
+.benefit-t{font-size:16px;font-weight:500;color:var(--ink);margin-bottom:9px;letter-spacing:-.005em;}
+.benefit-d{font-size:13.5px;color:var(--muted);line-height:1.7;}
+
+/* ── Pathway ── */
+.path-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);}
+.path-step{padding:32px 28px 8px 0;border-right:1px solid var(--line-soft);position:relative;}
+.path-step+.path-step{padding-left:28px;}
+.path-step:last-child{border-right:none;}
+.path-step::before{
+  content:"";position:absolute;top:-1px;left:0;width:0;height:1px;
+  background:var(--orange);transition:width .5s ease;
+}
+.path-step.current::before{width:100%;}
+.path-num{
+  font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:500;
+  font-size:30px;color:var(--faint);line-height:1;margin-bottom:16px;
+}
+.path-step.current .path-num{color:var(--orange-text);}
+.path-t{font-size:15.5px;font-weight:500;color:var(--ink);margin-bottom:8px;}
+.path-d{font-size:13px;color:var(--muted);line-height:1.65;}
+.path-badge{
+  display:inline-block;margin-top:16px;font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  padding:4px 11px;border:1px solid var(--line);color:var(--faint);border-radius:100px;
+}
+.path-badge.now{border-color:var(--orange-text);color:var(--orange-text);}
+
+/* ── Who this is for ── */
+.for-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,3.5vw,40px);}
+.fcard{background:#fff;border-radius:16px;padding:30px 32px 20px;box-shadow:0 8px 28px rgba(10,31,60,.07);}
+.fcard h3{
+  font-size:15px;font-weight:500;color:var(--ink);margin-bottom:20px;
+  padding-bottom:14px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:12px;letter-spacing:.01em;
+}
+.fmark{
+  font-family:'DM Mono',monospace;font-size:13px;width:22px;height:22px;
+  border:1px solid currentColor;border-radius:50%;display:inline-flex;
+  align-items:center;justify-content:center;flex-shrink:0;
+}
+.fcard.yes h3 .fmark{color:var(--cyan);}
+.fcard.no h3 .fmark{color:var(--orange-text);}
+.fcard ul{list-style:none;display:flex;flex-direction:column;}
+.fcard ul li{
+  font-size:14.5px;color:var(--body);padding:13px 0 13px 26px;position:relative;
+  line-height:1.6;border-bottom:1px solid var(--line-soft);
+}
+.fcard ul li::before{position:absolute;left:0;top:13px;font-family:'DM Mono',monospace;font-size:12px;}
+.yes li::before{content:"—";color:var(--cyan);}
+.no li::before{content:"—";color:var(--faint);}
+.fcard.no ul li{color:var(--muted);}
+
+/* ── Pricing ── */
+.price-grid{
+  display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  gap:clamp(44px,6vw,90px);align-items:start;
+}
+.ptag{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--faint);margin-bottom:26px;
+}
+.price-line{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:6px;}
+.pamt{
+  font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:600;
+  font-size:clamp(58px,7vw,84px);color:var(--ink);line-height:1;
+}
+.pamt sup{
+  font-family:'Inter',sans-serif;font-style:normal;font-weight:400;
+  font-size:.32em;color:var(--muted);vertical-align:super;margin-right:6px;letter-spacing:.05em;
+}
+.price-orig{
+  font-size:17px;color:var(--faint);text-decoration:line-through;
+  text-decoration-color:rgba(255,122,26,.7);font-weight:300;
+}
+.price-badge{
+  font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;padding:5px 13px;border:none;background:var(--orange);
+  color:#fff;border-radius:100px;box-shadow:0 4px 12px rgba(255,122,26,.3);
+}
+.pper{font-size:13.5px;color:var(--muted);margin-bottom:34px;}
+.pinc{list-style:none;display:flex;flex-direction:column;border-top:1px solid var(--line);}
+.pinc li{
+  display:flex;align-items:baseline;gap:16px;font-size:14.5px;color:var(--body);
+  padding:13px 0;border-bottom:1px solid var(--line-soft);line-height:1.6;
+}
+.pinc li::before{
+  content:"—";font-family:'DM Mono',monospace;font-size:12px;color:var(--cyan);flex-shrink:0;
+}
+/* form panel */
+.form-panel{background:#fff;border:none;border-radius:18px;
+  box-shadow:0 14px 40px rgba(10,31,60,.1);padding:clamp(26px,3.6vw,44px);}
+.form-panel h3{
+  font-family:'Playfair Display',Georgia,serif;font-weight:600;
+  font-size:24px;color:var(--ink);margin-bottom:8px;letter-spacing:-.01em;
+}
+.form-panel .fdesc{font-size:13.5px;color:var(--muted);margin-bottom:24px;line-height:1.7;}
+.pay-note{
+  font-size:12px;color:var(--muted);margin-top:18px;line-height:1.7;
+  padding-top:16px;border-top:1px solid var(--line-soft);
+}
+
+/* ── FAQ ── */
+.faq-list{border-top:1px solid var(--line);max-width:820px;}
+.fi{border-bottom:1px solid var(--line-soft);}
+.fq{
+  width:100%;background:none;border:none;padding:24px 0;text-align:left;
+  font-family:'Inter',sans-serif;font-size:16px;font-weight:400;color:var(--ink);
+  cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  gap:20px;transition:color .2s;line-height:1.5;
+}
+.fq:hover{color:var(--cyan);}
+.ficon{
+  color:var(--cyan);font-size:20px;font-weight:200;font-style:normal;
+  transition:transform .3s;flex-shrink:0;line-height:1;
+}
+.fi.open .ficon{transform:rotate(45deg);}
+.fa{
+  max-height:0;overflow:hidden;font-size:14.5px;color:var(--muted);line-height:1.75;
+  transition:max-height .4s ease,padding .3s;max-width:700px;
+}
+.fi.open .fa{max-height:260px;padding-bottom:26px;}
+
+/* ── Footer ── */
+footer{background:linear-gradient(160deg,#0341B3 0%,#01254F 100%);padding:64px 0 34px;}
+footer .logo-name{color:#fff;}
+footer .ftag{color:rgba(255,255,255,.55);}
+footer .flinks a{color:rgba(255,255,255,.7);}
+footer .flinks a:hover{color:#CDEEFF;}
+footer .ftop{border-bottom-color:rgba(10,31,60,.2);}
+footer .fcopy,footer .fmy{color:rgba(255,255,255,.4);}
+footer .logo-mark line[stroke="#0A1F3C"]{stroke:#CDEEFF;}
+.fin{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad);}
+.ftop{
+  display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;
+  padding-bottom:34px;border-bottom:1px solid var(--line-soft);margin-bottom:24px;
+}
+.ftag{font-size:13px;color:var(--faint);max-width:240px;line-height:1.7;margin-top:12px;}
+.flinks{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;padding-top:6px;}
+.flinks a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.flinks a:hover{color:var(--cyan);}
+.fbot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+.fcopy,.fmy{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--faint);letter-spacing:.1em;}
+
+/* ── Sticky bar ── */
+.sticky{
+  position:fixed;bottom:0;left:0;right:0;z-index:90;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);
+  padding:13px var(--pad);display:flex;justify-content:space-between;
+  align-items:center;gap:16px;transform:translateY(100%);transition:transform .35s ease;
+}
+.sticky.show{transform:translateY(0);}
+.sl{font-size:13px;color:var(--muted);font-weight:300;}
+.sr{display:flex;align-items:center;gap:18px;}
+.sr .old{
+  font-family:'DM Mono',monospace;font-size:11px;color:var(--faint);
+  text-decoration:line-through;
+}
+.sp2{
+  font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:600;
+  font-size:21px;color:var(--ink);
+}
+
+
+/* ── AI ASSISTANT WIDGET ── */
+.chat-fab{
+  position:fixed;right:20px;bottom:20px;z-index:95;width:56px;height:56px;
+  border-radius:50%;background:var(--blue);border:none;cursor:pointer;
+  box-shadow:0 10px 28px rgba(34,81,255,.38);display:flex;align-items:center;
+  justify-content:center;transition:transform .2s,background .2s,bottom .35s ease;
+}
+.chat-fab:hover{background:var(--blue-hover);transform:translateY(-2px);}
+.chat-fab svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:1.6;}
+.sticky.show ~ .chat-fab{bottom:86px;}
+.chat-panel{
+  position:fixed;right:20px;bottom:88px;z-index:96;
+  width:min(380px,calc(100vw - 32px));height:min(560px,72vh);
+  background:#fff;border-radius:18px;box-shadow:0 24px 70px rgba(10,31,60,.28);
+  display:none;flex-direction:column;overflow:hidden;
+}
+.sticky.show ~ .chat-panel{bottom:150px;}
+.chat-panel.open{display:flex;}
+.chat-head{
+  background:linear-gradient(135deg,#0341B3,#01254F);padding:16px 18px;
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.chat-head .cico{width:30px;height:30px;flex-shrink:0;}
+.chat-head-t{flex:1;min-width:0;}
+.chat-head-t .ct{font-size:15px;font-weight:500;color:#fff;line-height:1.2;}
+.chat-head-t .cs{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:3px;}
+.chat-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:22px;
+  font-weight:200;cursor:pointer;line-height:1;padding:4px 6px;}
+.chat-close:hover{color:#fff;}
+.chat-body{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;
+  gap:10px;background:linear-gradient(180deg,#F6FAFF,#EAF2FC);}
+.cmsg{max-width:85%;padding:11px 15px;font-size:14px;line-height:1.6;border-radius:14px;}
+.cmsg.bot{background:#fff;color:var(--body);box-shadow:0 3px 12px rgba(10,31,60,.07);
+  border-bottom-left-radius:4px;align-self:flex-start;}
+.cmsg.user{background:var(--blue);color:#fff;border-bottom-right-radius:4px;align-self:flex-end;}
+.cmsg.typing{color:var(--faint);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.2em;}
+.chat-chips{display:flex;flex-direction:column;gap:8px;align-items:flex-start;margin-top:2px;}
+.chip{background:#fff;border:1px solid rgba(34,81,255,.35);color:var(--cyan);
+  font-family:'Inter',sans-serif;font-size:12.5px;font-weight:400;padding:8px 14px;
+  border-radius:100px;cursor:pointer;text-align:left;transition:all .15s;line-height:1.4;}
+.chip:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
+.chat-foot{display:flex;gap:10px;padding:12px 14px;background:#fff;
+  border-top:1px solid var(--line-soft);flex-shrink:0;}
+.chat-in{flex:1;border:1px solid var(--line);border-radius:10px;padding:11px 14px;
+  font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:#FBFDFF;outline:none;}
+.chat-in:focus{border-color:var(--blue);}
+.chat-send{width:44px;height:44px;border-radius:10px;background:var(--blue);border:none;
+  cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;}
+.chat-send:hover{background:var(--blue-hover);}
+.chat-send:disabled{background:var(--faint);cursor:default;}
+.chat-send svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.8;}
+.chat-note{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.08em;
+  color:var(--faint);text-align:center;padding:0 14px 10px;background:#fff;flex-shrink:0;}
+@media(max-width:680px){
+  .chat-panel{right:16px;height:min(520px,68vh);}
+  .sticky.show ~ .chat-fab{bottom:78px;}
+  .sticky.show ~ .chat-panel{bottom:142px;}
+}
+
+/* ── Reveal on scroll ── */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s ease;}
+.reveal.in{opacity:1;transform:translateY(0);}
+.d1{transition-delay:.08s;}.d2{transition-delay:.16s;}.d3{transition-delay:.24s;}
+
+/* Chinese: CJK-safe stacks (Playfair has no CJK glyphs) */
+:root[lang="zh"] body{font-family:'Inter','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;}
+:root[lang="zh"] .hero h1,:root[lang="zh"] .stitle,:root[lang="zh"] .qt,
+:root[lang="zh"] .bm-line,:root[lang="zh"] .form-panel h3{
+  font-family:'Playfair Display','Songti SC','Noto Serif SC','SimSun',Georgia,serif;
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;}
+  .reveal{opacity:1;transform:none;}
+  html{scroll-behavior:auto;}
+}
+
+/* ── Responsive ── */
+@media(max-width:960px){
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-illus{max-width:440px;}
+  .benefits-grid{grid-template-columns:repeat(2,1fr);}
+  .path-steps{grid-template-columns:repeat(2,1fr);}
+  .path-step:nth-child(2){border-right:none;}
+  .path-step:nth-child(3){border-top:1px solid var(--line-soft);}
+  .path-step:nth-child(4){border-top:1px solid var(--line-soft);}
+  .split,.price-grid{grid-template-columns:1fr;}
+  .split .fig{order:2;max-width:500px;}
+  .split .prose{order:1;}
+}
+@media(max-width:680px){
+  .nav-links .nl{display:none;}
+  .hstats{flex-wrap:wrap;}
+  .hs{flex:1 1 42%;padding:18px 14px 0 0;}
+  .hs:nth-child(2){border-right:none;}
+  .hs:nth-child(3){padding-left:0;}
+  .steps .step{grid-template-columns:1fr;gap:8px;}
+  .step-n{font-size:24px;}
+  .step-tag{display:none;}
+  .benefits-grid{grid-template-columns:1fr;border-left:none;}
+  .benefit-card{border-right:none;padding:28px 0 32px;}
+  .path-steps{grid-template-columns:1fr;}
+  .path-step{border-right:none;padding-left:0!important;border-top:1px solid var(--line-soft);}
+  .path-step:first-child{border-top:none;}
+  .for-grid{grid-template-columns:1fr;}
+  .srow{grid-template-columns:1fr;gap:6px;}
+  .sticky .sl{display:none;}
+  .sec-arrow{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-in">
+    <a href="#" class="logo" aria-label="Cosmic Lab home">
+      <div class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 26 26" fill="none">
+          <line x1="13" y1="1" x2="8" y2="17" stroke="#1D6DE5" stroke-width="1.4"/>
+          <line x1="8" y1="17" x2="4" y2="25" stroke="#1D6DE5" stroke-width="1" opacity=".5"/>
+          <line x1="8" y1="17" x2="12" y2="25" stroke="#1D6DE5" stroke-width="1" opacity=".5"/>
+          <line x1="13" y1="1" x2="19" y2="16" stroke="#0A1F3C" stroke-width="1.4"/>
+          <line x1="19" y1="16" x2="23" y2="25" stroke="#0A1F3C" stroke-width="1" opacity=".5"/>
+          <circle cx="13" cy="1.6" r="1.6" fill="#1D6DE5"/>
+        </svg>
+      </div>
+      <span class="logo-name">Cosmic<span> Lab</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#how" class="nl" data-i18n="nav_how">How It Works</a>
+      <a href="#schedule" class="nl" data-i18n="nav_sched">Schedule</a>
+      <a href="#enrol" class="nl" data-i18n="nav_price">Pricing</a>
+      <div class="lang-sw" role="group" aria-label="Language">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <span class="lang-sep">·</span>
+        <button class="lang-btn" onclick="setLang('zh')">中文</button>
+        <span class="lang-sep">·</span>
+        <button class="lang-btn" onclick="setLang('ms')">BM</button>
+      </div>
+      <a href="#enrol" class="ncta" data-i18n="nav_cta">Register Interest</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<header class="hero">
+  <canvas id="cosray" aria-hidden="true"></canvas>
+  <div class="hero-fade" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge" data-i18n="hero_badge">1-Day Online Masterclass · Beginner-Friendly</div>
+      <h1 data-i18n-html="hero_h1">Detect <em>cosmic rays</em><br>from space</h1>
+      <p class="hero-sub" data-i18n-html="hero_sub">Malaysian high schoolers analyse <strong>real muon detector data</strong> using Python. Live proof of Einstein's relativity — right in your browser.</p>
+      <div class="hero-ctas">
+        <a href="#enrol" class="btn-p" data-i18n="hero_cta">Register Your Interest</a>
+        <a href="#how" class="btn-s" data-i18n="nav_how">How It Works</a>
+      </div>
+      <div class="hstats">
+        <div class="hs"><span class="hsv">100,000+</span><span class="hsl" data-i18n="stat_events">Real Events</span></div>
+        <div class="hs"><span class="hsv">4 hrs</span><span class="hsl" data-i18n="stat_hands">Hands-On</span></div>
+        <div class="hs"><span class="hsv">RM 199</span><span class="hsl" data-i18n="stat_price">Per Student</span></div>
+        <div class="hs"><span class="hsv">Form 4–6</span><span class="hsl" data-i18n="stat_age">Target Age</span></div>
+      </div>
+    </div>
+
+    <!-- Hero figure: air shower → detector, duotone -->
+    <div class="hero-illus" aria-hidden="true">
+      <svg width="100%" viewBox="0 0 400 430" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <text x="200" y="18" text-anchor="middle" font-family="'DM Mono',monospace" font-size="9.5" fill="rgba(90,117,144,.85)" letter-spacing="4">UPPER ATMOSPHERE</text>
+        <line x1="30" y1="30" x2="370" y2="30" stroke="rgba(10,31,60,.16)" stroke-width="1"/>
+        <!-- incoming primary -->
+        <line x1="200" y1="34" x2="200" y2="76" stroke="#1D6DE5" stroke-width="1.4" stroke-dasharray="4 4"/>
+        <circle cx="200" cy="40" r="3" fill="#1D6DE5"/>
+        <text x="212" y="47" font-family="'DM Mono',monospace" font-size="9" fill="rgba(29,109,229,.9)">cosmic ray</text>
+        <!-- collision -->
+        <circle cx="200" cy="84" r="9" stroke="rgba(34,81,255,.45)" stroke-width="1"/>
+        <circle cx="200" cy="84" r="2.5" fill="#FF7A1A"/>
+        <!-- shower fan -->
+        <line x1="200" y1="84" x2="112" y2="168" stroke="rgba(10,31,60,.30)" stroke-width="1"/>
+        <line x1="112" y1="168" x2="72"  y2="248" stroke="rgba(10,31,60,.16)" stroke-width="1"/>
+        <line x1="112" y1="168" x2="132" y2="248" stroke="rgba(10,31,60,.16)" stroke-width="1"/>
+        <line x1="200" y1="84" x2="288" y2="168" stroke="rgba(10,31,60,.30)" stroke-width="1"/>
+        <line x1="288" y1="168" x2="328" y2="248" stroke="rgba(10,31,60,.16)" stroke-width="1"/>
+        <line x1="288" y1="168" x2="264" y2="248" stroke="rgba(10,31,60,.16)" stroke-width="1"/>
+        <circle cx="112" cy="168" r="2.4" fill="rgba(10,31,60,.38)"/>
+        <circle cx="288" cy="168" r="2.4" fill="rgba(10,31,60,.38)"/>
+        <circle cx="72"  cy="248" r="2"   fill="rgba(10,31,60,.24)"/>
+        <circle cx="132" cy="248" r="2"   fill="rgba(10,31,60,.24)"/>
+        <circle cx="328" cy="248" r="2"   fill="rgba(10,31,60,.24)"/>
+        <circle cx="264" cy="248" r="2"   fill="rgba(10,31,60,.24)"/>
+        <!-- muon — the survivor, cyan -->
+        <line x1="200" y1="84" x2="200" y2="392" stroke="#1D6DE5" stroke-width="1.8"/>
+        <circle cx="200" cy="180" r="3.4" fill="#1D6DE5">
+          <animate attributeName="cy" values="96;388;96" dur="3.6s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.92;1" dur="3.6s" repeatCount="indefinite"/>
+        </circle>
+        <text x="212" y="216" font-family="'DM Mono',monospace" font-size="10" fill="#1D6DE5" letter-spacing="1">μ  muon</text>
+        <text x="212" y="232" font-family="'DM Mono',monospace" font-size="9" fill="rgba(29,109,229,.6)">v ≈ 0.998 c</text>
+        <!-- detector -->
+        <rect x="140" y="300" width="120" height="13" stroke="rgba(29,109,229,.75)" stroke-width="1"/>
+        <text x="270" y="311" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(90,117,144,.9)">scintillator A</text>
+        <line x1="152" y1="313" x2="152" y2="338" stroke="rgba(10,31,60,.2)" stroke-width="1"/>
+        <line x1="248" y1="313" x2="248" y2="338" stroke="rgba(10,31,60,.2)" stroke-width="1"/>
+        <rect x="140" y="338" width="120" height="13" stroke="rgba(29,109,229,.75)" stroke-width="1"/>
+        <text x="270" y="349" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(90,117,144,.9)">scintillator B</text>
+        <!-- coincidence bracket -->
+        <path d="M128 306 h-10 v39 h10" stroke="rgba(10,31,60,.30)" stroke-width="1"/>
+        <text x="112" y="330" text-anchor="end" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(10,31,60,.5)">hit!</text>
+        <!-- hit pulses -->
+        <circle cx="200" cy="306" r="3" fill="#FF7A1A"><animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;.6;.66;.74;1" dur="3.6s" repeatCount="indefinite"/></circle>
+        <circle cx="200" cy="344" r="3" fill="#FF7A1A"><animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;.65;.71;.79;1" dur="3.6s" repeatCount="indefinite"/></circle>
+        <!-- ground -->
+        <line x1="30" y1="392" x2="370" y2="392" stroke="rgba(10,31,60,.2)" stroke-width="1"/>
+        <text x="200" y="412" text-anchor="middle" font-family="'DM Mono',monospace" font-size="9.5" fill="rgba(90,117,144,.85)" letter-spacing="4">EARTH SURFACE</text>
+      </svg>
+      <p class="illus-cap">Fig. 01 — An air shower: one cosmic ray, millions of muons.</p>
+    </div>
+  </div>
+</header>
+
+<!-- ── THE SCIENCE ── -->
+<section class="sec">
+  <div class="con">
+    <div class="split reveal">
+      <div class="fig">
+        <svg width="100%" viewBox="0 0 460 330" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <!-- Without relativity -->
+          <text x="0" y="16" font-family="'DM Mono',monospace" font-size="10" fill="rgba(90,117,144,.95)" letter-spacing="2">WITHOUT RELATIVITY</text>
+          <line x1="0" y1="30" x2="460" y2="30" stroke="rgba(10,31,60,.13)" stroke-width="1"/>
+          <line x1="20" y1="66" x2="150" y2="66" stroke="rgba(10,31,60,.48)" stroke-width="1.6"/>
+          <circle cx="20" cy="66" r="4" fill="rgba(10,31,60,.62)"/>
+          <text x="20" y="52" font-family="'DM Mono',monospace" font-size="9" fill="rgba(10,31,60,.55)">μ born</text>
+          <path d="M144 58 l14 16 M158 58 l-14 16" stroke="rgba(10,31,60,.48)" stroke-width="1.4"/>
+          <text x="168" y="70" font-family="'DM Mono',monospace" font-size="9" fill="rgba(90,117,144,.9)">decays after 2.2 μs — never reaches Earth</text>
+          <line x1="20" y1="98" x2="440" y2="98" stroke="rgba(10,31,60,.18)" stroke-width="1" stroke-dasharray="2 5"/>
+          <text x="440" y="112" text-anchor="end" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(138,163,188,.95)">ground</text>
+
+          <!-- With relativity -->
+          <text x="0" y="158" font-family="'DM Mono',monospace" font-size="10" fill="#1D6DE5" letter-spacing="2">WITH SPECIAL RELATIVITY</text>
+          <line x1="0" y1="172" x2="460" y2="172" stroke="rgba(34,81,255,.3)" stroke-width="1"/>
+          <line x1="20" y1="208" x2="420" y2="208" stroke="#1D6DE5" stroke-width="1.8"/>
+          <circle cx="20" cy="208" r="4" fill="#1D6DE5"/>
+          <text x="20" y="194" font-family="'DM Mono',monospace" font-size="9" fill="#1D6DE5">μ born</text>
+          <text x="220" y="196" text-anchor="middle" font-family="'DM Mono',monospace" font-size="9" fill="rgba(29,109,229,.85)">time dilates — the clock slows</text>
+          <rect x="404" y="200" width="32" height="16" stroke="rgba(29,109,229,.75)" stroke-width="1"/>
+          <circle cx="420" cy="208" r="3.6" fill="#FF7A1A">
+            <animate attributeName="opacity" values="1;.25;1" dur="1.6s" repeatCount="indefinite"/>
+          </circle>
+          <line x1="20" y1="240" x2="440" y2="240" stroke="rgba(10,31,60,.18)" stroke-width="1" stroke-dasharray="2 5"/>
+          <text x="440" y="254" text-anchor="end" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(138,163,188,.95)">ground</text>
+          <text x="20" y="256" font-family="'DM Mono',monospace" font-size="9" fill="rgba(29,109,229,.9)">reaches the detector ✓</text>
+
+          <!-- terminal output -->
+          <line x1="0" y1="282" x2="460" y2="282" stroke="rgba(10,31,60,.13)" stroke-width="1"/>
+          <text x="0" y="304" font-family="'DM Mono',monospace" font-size="10.5" fill="rgba(90,117,144,.95)">$ python3 analysis.py — 100,847 events loaded</text>
+          <text x="0" y="324" font-family="'DM Mono',monospace" font-size="10.5" fill="#1D6DE5">muon flux: 1.04 ± 0.03 cm⁻² min⁻¹ ✓</text>
+        </svg>
+        <p class="illus-cap">Fig. 02 — Why muons reach the ground: your first measurement of the day.</p>
+      </div>
+      <div class="prose">
+        <div class="eyebrow" data-i18n="muon_kicker">The Science</div>
+        <h2 class="stitle" data-i18n-html="muon_title">What <em>are</em> muons?</h2>
+        <h3 data-i18n="muon_h3">Super-particles from space</h3>
+        <p data-i18n-html="muon_p1">Cosmic rays — high-energy particles from distant stars and supernovae — constantly bombard Earth's upper atmosphere. When they smash into air molecules, they produce a shower of new particles called <strong>muons</strong>.</p>
+        <p data-i18n-html="muon_p2">Muons travel toward Earth at nearly the speed of light. Their lifespan is just 2.2 millionths of a second — they <em>should</em> decay long before reaching the surface. Yet they arrive in their millions every minute.</p>
+        <div class="callout">
+          <p data-i18n-html="muon_relbox">This is Einstein's Special Relativity in action. At near-light speeds, time slows down for the muon — giving it enough time to complete the journey. Every detection is live proof that time is not absolute.</p>
+        </div>
+        <p class="bm-line" data-i18n="muon_bm_h3">Every second, hundreds of muons pass through your body.</p>
+        <p class="bm-sub" data-i18n="muon_bm_p">In this class, you will catch them.</p>
+        <span class="side-note" data-i18n="muon_tag">Data from real detector</span>
+      </div>
+    </div>
+  </div>
+  <span class="sec-arrow" aria-hidden="true">→</span>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="sec alt" id="how">
+  <div class="con">
+    <div class="shead reveal">
+      <div class="eyebrow" data-i18n="how_kicker">What You'll Do</div>
+      <h2 class="stitle" data-i18n-html="how_title">Real science. <em>Real data.</em> One day.</h2>
+      <p class="sdesc" data-i18n="how_desc">You won't watch slides. You'll write Python code and make actual measurements with data from a real particle detector — exactly how professional physicists do it.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><div class="step-n">01</div><div><div class="step-t" data-i18n="step1_t">Meet the cosmic ray muon</div><div class="step-d" data-i18n="step1_d">Learn what muons are, where they come from, and why physicists at Fermilab and CERN study them. Live Q&amp;A with a real physicist.</div></div><span class="step-tag">Physics</span></div>
+      <div class="step"><div class="step-n">02</div><div><div class="step-t" data-i18n="step2_t">Write your first Python analysis</div><div class="step-d" data-i18n="step2_d">Load real detector data, plot hit maps, measure muon rates, and build histograms — in a browser notebook. No setup. No prior coding needed.</div></div><span class="step-tag">Python · NumPy</span></div>
+      <div class="step"><div class="step-n">03</div><div><div class="step-t" data-i18n="step3_t">Reconstruct a particle track</div><div class="step-d" data-i18n="step3_d">Use the same techniques as professional physicists to trace a muon's path through the detector and calculate its direction.</div></div><span class="step-tag">Data Analysis</span></div>
+      <div class="step"><div class="step-n">04</div><div><div class="step-t" data-i18n="step4_t">Measure the muon flux</div><div class="step-d" data-i18n="step4_d">Extract a real physics result — the rate of cosmic ray muons at ground level — and compare it to the theoretical prediction.</div></div><span class="step-tag">Experimental Physics</span></div>
+      <div class="step"><div class="step-n">05</div><div><div class="step-t" data-i18n="step5_t">Discover the tunnel anomaly</div><div class="step-d" data-i18n="step5_d">Analyse data from an underground tunnel. Can you spot the density change in the rock above from muon counts alone?</div></div><span class="step-tag">Muography</span></div>
+      <div class="step"><div class="step-n">06</div><div><div class="step-t" data-i18n="step6_t">Present your result</div><div class="step-d" data-i18n="step6_d">Every student presents one finding from their own analysis. Real science ends with sharing discoveries — and so does this class.</div></div><span class="step-tag">Communication</span></div>
+    </div>
+  </div>
+  <span class="sec-arrow" aria-hidden="true">→</span>
+</section>
+
+<!-- ── THE DETECTOR ── -->
+<section class="sec">
+  <div class="con">
+    <div class="split reveal">
+      <div class="fig">
+        <svg width="100%" viewBox="0 0 420 440" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <!-- muon track through everything -->
+          <line x1="210" y1="20" x2="210" y2="400" stroke="#1D6DE5" stroke-width="1.4" stroke-dasharray="6 5" opacity=".75"/>
+          <text x="222" y="32" font-family="'DM Mono',monospace" font-size="11" fill="#1D6DE5">μ</text>
+          <!-- control unit -->
+          <rect x="150" y="60" width="120" height="58" stroke="rgba(10,31,60,.48)" stroke-width="1.1"/>
+          <text x="140" y="80" text-anchor="end" font-family="'DM Mono',monospace" font-size="9" fill="rgba(90,117,144,.95)">control unit</text>
+          <circle cx="168" cy="104" r="3" fill="#1D6DE5"><animate attributeName="opacity" values="1;.3;1" dur="1.7s" repeatCount="indefinite"/></circle>
+          <circle cx="182" cy="104" r="3" stroke="rgba(10,31,60,.48)" stroke-width="1"/>
+          <line x1="200" y1="98" x2="256" y2="98" stroke="rgba(10,31,60,.22)" stroke-width="1"/>
+          <line x1="200" y1="106" x2="256" y2="106" stroke="rgba(10,31,60,.22)" stroke-width="1"/>
+          <!-- frame -->
+          <line x1="120" y1="130" x2="300" y2="130" stroke="rgba(10,31,60,.36)" stroke-width="1.4"/>
+          <line x1="126" y1="130" x2="126" y2="356" stroke="rgba(10,31,60,.36)" stroke-width="1.4"/>
+          <line x1="294" y1="130" x2="294" y2="356" stroke="rgba(10,31,60,.36)" stroke-width="1.4"/>
+          <line x1="104" y1="356" x2="148" y2="356" stroke="rgba(10,31,60,.36)" stroke-width="1.4"/>
+          <line x1="272" y1="356" x2="316" y2="356" stroke="rgba(10,31,60,.36)" stroke-width="1.4"/>
+          <!-- scintillator A -->
+          <rect x="135" y="176" width="150" height="24" stroke="#1D6DE5" stroke-width="1.2"/>
+          <text x="210" y="192" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(29,109,229,.95)">scintillator A · 150 × 150 mm</text>
+          <!-- spacers -->
+          <line x1="150" y1="200" x2="150" y2="252" stroke="rgba(10,31,60,.22)" stroke-width="1"/>
+          <line x1="270" y1="200" x2="270" y2="252" stroke="rgba(10,31,60,.22)" stroke-width="1"/>
+          <!-- scintillator B -->
+          <rect x="135" y="252" width="150" height="24" stroke="#1D6DE5" stroke-width="1.2"/>
+          <text x="210" y="268" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(29,109,229,.95)">scintillator B · 150 × 150 mm</text>
+          <!-- SiPM labels -->
+          <line x1="285" y1="188" x2="322" y2="188" stroke="rgba(10,31,60,.30)" stroke-width="1"/>
+          <text x="328" y="192" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(10,31,60,.55)">SiPM</text>
+          <line x1="285" y1="264" x2="322" y2="264" stroke="rgba(10,31,60,.30)" stroke-width="1"/>
+          <text x="328" y="268" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(10,31,60,.55)">SiPM</text>
+          <!-- coincidence bracket -->
+          <path d="M120 188 h-14 v76 h14" stroke="rgba(29,109,229,.55)" stroke-width="1"/>
+          <text x="98" y="222" text-anchor="end" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(29,109,229,.95)">coincidence</text>
+          <text x="98" y="236" text-anchor="end" font-family="'DM Mono',monospace" font-size="8.5" fill="rgba(90,117,144,.85)">A ∧ B → count</text>
+          <!-- hit pulses -->
+          <circle cx="210" cy="188" r="3.4" fill="#FF7A1A"><animate attributeName="opacity" values="1;.15;1" dur="1.3s" repeatCount="indefinite"/></circle>
+          <circle cx="210" cy="264" r="3.4" fill="#FF7A1A"><animate attributeName="opacity" values=".15;1;.15" dur="1.3s" repeatCount="indefinite"/></circle>
+          <!-- USB to laptop -->
+          <path d="M270 89 Q356 89 356 342" stroke="rgba(10,31,60,.24)" stroke-width="1" stroke-dasharray="3 4"/>
+          <rect x="332" y="342" width="48" height="30" stroke="rgba(10,31,60,.38)" stroke-width="1"/>
+          <line x1="322" y1="378" x2="390" y2="378" stroke="rgba(10,31,60,.38)" stroke-width="1.4"/>
+          <text x="356" y="362" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="rgba(29,109,229,.85)">data log</text>
+          <!-- ground + scale -->
+          <line x1="40" y1="400" x2="380" y2="400" stroke="rgba(10,31,60,.18)" stroke-width="1"/>
+          <line x1="60" y1="424" x2="120" y2="424" stroke="rgba(143,163,181,.6)" stroke-width="1"/>
+          <line x1="60" y1="419" x2="60" y2="429" stroke="rgba(143,163,181,.6)" stroke-width="1"/>
+          <line x1="120" y1="419" x2="120" y2="429" stroke="rgba(143,163,181,.6)" stroke-width="1"/>
+          <text x="132" y="428" font-family="'DM Mono',monospace" font-size="9" fill="rgba(90,117,144,.9)">150 mm</text>
+        </svg>
+        <p class="illus-cap">Fig. 03 — The two-scintillator muon detector behind your dataset.</p>
+      </div>
+      <div class="prose det-text">
+        <div class="eyebrow" data-i18n="det_kicker">The Detector</div>
+        <h2 class="stitle" data-i18n-html="det_title">Built by a <em>particle physicist</em></h2>
+        <p class="tg" data-i18n="det_p">The data you analyse comes from a real two-scintillator muon detector — the same core technology used in high-energy physics labs worldwide, miniaturised for education and fieldwork.</p>
+        <ul class="flist">
+          <li><div class="fic"><svg viewBox="0 0 34 34"><path d="M19 4 L10 19 h7 l-3 11 L25 14 h-7 z"/></svg></div><div class="flb" data-i18n-html="det_f1"><strong>Coincidence detection</strong> — a muon is only logged when both scintillator panels register a simultaneous hit, eliminating background noise.</div></li>
+          <li><div class="fic"><svg viewBox="0 0 34 34"><circle cx="17" cy="14" r="7"/><path d="M17 3v3M28 14h3M3 14h3M25 6l-2 2M9 6l2 2M13 24h8M14 28h6"/></svg></div><div class="flb" data-i18n-html="det_f2"><strong>SiPM photosensors</strong> — silicon photomultipliers convert the faint scintillation flash from each muon hit into an electronic signal.</div></li>
+          <li><div class="fic"><svg viewBox="0 0 34 34"><path d="M5 29V13M13 29V6M21 29V17M29 29V10M3 29h28"/></svg></div><div class="flb" data-i18n-html="det_f3"><strong>100,000+ events logged</strong> — from an underground tunnel, giving you a rich, real dataset with genuine physics to extract.</div></li>
+          <li><div class="fic"><svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="13"/><path d="M4 17h26M17 4c-5 4-5 22 0 26M17 4c5 4 5 22 0 26"/></svg></div><div class="flb" data-i18n-html="det_f4"><strong>Southeast Asia's first</strong> — this data comes from a muon imaging group in the region.</div></li>
+        </ul>
+        <div class="callout">
+          <p data-i18n-html="det_note">You won't just <em>learn about</em> a muon detector. You'll analyse data from one — the same way physicists do at CERN, Fermilab, and KEK.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="sec-arrow" aria-hidden="true">→</span>
+</section>
+
+<!-- ── SCHEDULE ── -->
+<section class="sec alt" id="schedule">
+  <div class="con">
+    <div class="shead reveal">
+      <div class="eyebrow" data-i18n="sched_kicker">Schedule</div>
+      <h2 class="stitle" data-i18n-html="sched_title">Your <em>day</em> in detail</h2>
+      <p class="sdesc" data-i18n="sched_desc">All sessions are live and interactive. Ask the instructor anything — they're a real particle physicist.</p>
+    </div>
+    <div class="swrap reveal">
+      <div class="srow"><div class="stm">9:00 AM</div><div><div class="stit" data-i18n-html="s1_t">Welcome &amp; Notebook Setup</div><div class="sdsc" data-i18n-html="s1_d">Google Colab running in your browser — zero installation. Quick intro to the day ahead.</div><div class="spills"><span class="sp">Colab</span><span class="sp">15 min</span></div></div></div>
+      <div class="srow"><div class="stm">9:15 AM</div><div><div class="stit" data-i18n-html="s2_t">Cosmic Ray Physics — The 10-Minute Version</div><div class="sdsc" data-i18n-html="s2_d">Where muons come from, how they're detected, and why they prove Einstein right. Live Q&amp;A.</div><div class="spills"><span class="sp" data-i18n="pill_lecture">Lecture</span><span class="sp">45 min</span></div></div></div>
+      <div class="srow"><div class="stm">10:00 AM</div><div><div class="stit" data-i18n-html="s3_t">Session 1 — First Look at the Data</div><div class="sdsc" data-i18n-html="s3_d">Load 100,000+ real muon events. Plot your first histogram. Calculate a muon rate. Your first physics measurement.</div><div class="spills"><span class="sp">Python</span><span class="sp" data-i18n="pill_handson">Hands-On</span><span class="sp">90 min</span></div></div></div>
+      <div class="srow"><div class="stm">11:30 AM</div><div><div class="stit" data-i18n-html="s4_t">Rehat</div><div class="sdsc" data-i18n-html="s4_d">Lunch break. Instructor in chat. Go eat some nasi lemak.</div><div class="spills"><span class="sp">30 min</span></div></div></div>
+      <div class="srow"><div class="stm">12:00 PM</div><div><div class="stit" data-i18n-html="s5_t">Session 2 — Track Reconstruction &amp; Tunnel Data</div><div class="sdsc" data-i18n-html="s5_d">Fit a line to a muon track. Switch to the tunnel dataset. Compare rates above vs underground. Find the anomaly.</div><div class="spills"><span class="sp">Python</span><span class="sp" data-i18n="pill_muog">Muography</span><span class="sp">90 min</span></div></div></div>
+      <div class="srow"><div class="stm">1:30 PM</div><div><div class="stit" data-i18n-html="s6_t">Presentations &amp; Wrap-Up</div><div class="sdsc" data-i18n-html="s6_d">Share one result. Hear what others found. How muon detectors are used commercially in Malaysia today. Q&amp;A.</div><div class="spills"><span class="sp" data-i18n="pill_present">Presentations</span><span class="sp">60 min</span></div></div></div>
+    </div>
+  </div>
+  <span class="sec-arrow" aria-hidden="true">→</span>
+</section>
+
+<!-- ── QUOTE ── -->
+<section class="quote-sec">
+  <div class="qi reveal">
+    <div class="qm" aria-hidden="true">"</div>
+    <p class="qt" data-i18n="quote_text">Teaching physics for years, I always told students about muons as evidence for relativity — but it remained abstract. Having real detector data to analyse makes the theory tangible in a way no textbook can.</p>
+    <div class="qa">Physics Teacher · <span>Malaysia</span></div>
+  </div>
+</section>
+
+<!-- ── WHAT YOU GAIN ── -->
+<section class="sec">
+  <div class="con">
+    <div class="shead reveal">
+      <div class="eyebrow" data-i18n="ben_kicker">What You'll Gain</div>
+      <h2 class="stitle" data-i18n-html="ben_title">Real skills. Real <em>credentials.</em></h2>
+      <p class="sdesc" data-i18n="ben_desc">Every student leaves with tangible outcomes — not just knowledge, but proof of what they can do.</p>
+    </div>
+    <div class="benefits-grid reveal">
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 30 30"><rect x="3" y="5" width="24" height="17"/><path d="M7 10h10M7 14h8"/><circle cx="21" cy="17" r="3"/><path d="M20 20l-1.5 5 2.5-1.6L23.5 25 22 20"/></svg></div>
+        <div class="benefit-t" data-i18n="ben1_t">Certificate of Completion</div>
+        <div class="benefit-d" data-i18n="ben1_d">A dated certificate signed by a tenured particle physicist — meaningful for university applications, scholarship essays, and SPM portfolio submissions.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 30 30"><path d="M10 8l-6 7 6 7M20 8l6 7-6 7M17 5l-4 20"/></svg></div>
+        <div class="benefit-t" data-i18n="ben2_t">A Working Python Project</div>
+        <div class="benefit-d" data-i18n="ben2_d">You leave with your own working analysis notebook — real code, real output, real physics. Something you can show interviewers, teachers, and university admissions.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 30 30"><path d="M12 3v8L5 24a2 2 0 0 0 1.8 3h16.4A2 2 0 0 0 25 24l-7-13V3M9 3h12M8.5 19h13"/></svg></div>
+        <div class="benefit-t" data-i18n="ben3_t">Real Research Experience</div>
+        <div class="benefit-d" data-i18n="ben3_d">You will have analysed actual detector data from a scientific experiment — the same type of work done at Fermilab and CERN. That is rare at high school level anywhere in the world.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 30 30"><path d="M25 14a10 10 0 1 0-4 8l5 2-1.4-5A10 10 0 0 0 25 14z"/><path d="M10 12h10M10 16h6"/></svg></div>
+        <div class="benefit-t" data-i18n="ben4_t">Access to a Physicist</div>
+        <div class="benefit-d" data-i18n="ben4_d">Graduates join a WhatsApp alumni group where you can ask questions, share discoveries, and hear about future programmes directly from the instructor.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 30 30"><path d="M15 4L2 10l13 6 13-6-13-6z"/><path d="M7 13v7c0 2 4 4 8 4s8-2 8-4v-7M27 11v8"/></svg></div>
+        <div class="benefit-t" data-i18n="ben5_t">University Application Edge</div>
+        <div class="benefit-d" data-i18n="ben5_d">JPA, MARA, and top universities look for evidence of genuine curiosity beyond grades. A muon physics analysis is the kind of thing that stands out in a personal statement.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon"><svg viewBox="0 0 30 30"><path d="M6 24L20 6a5 5 0 0 1 5 5L11 26l-6 2 1-4zM18 9l4 4"/><circle cx="7" cy="9" r="1.2"/><circle cx="25" cy="22" r="1.2"/></svg></div>
+        <div class="benefit-t" data-i18n="ben6_t">First Step into Physics Research</div>
+        <div class="benefit-d" data-i18n="ben6_d">Many students discover after this class that research is something they actually enjoy. This is the first rung on a ladder that can lead to internships, university research, and beyond.</div>
+      </div>
+    </div>
+  </div>
+  <span class="sec-arrow" aria-hidden="true">→</span>
+</section>
+
+<!-- ── PATHWAY ── -->
+<section class="sec alt">
+  <div class="con">
+    <div class="shead reveal">
+      <div class="eyebrow" data-i18n="path_kicker">What's Next</div>
+      <h2 class="stitle" data-i18n-html="path_title">Your <em>learning pathway</em></h2>
+      <p class="sdesc" data-i18n="path_desc">Cosmic Lab is the starting point. Here is where it can take you.</p>
+    </div>
+    <div class="path-steps reveal">
+      <div class="path-step current">
+        <div class="path-num">i.</div>
+        <div class="path-t" data-i18n="path1_t">Cosmic Lab Masterclass</div>
+        <div class="path-d" data-i18n="path1_d">1-day online bootcamp. Python data analysis with real muon detector data.</div>
+        <span class="path-badge now" data-i18n="path1_b">You are here</span>
+      </div>
+      <div class="path-step">
+        <div class="path-num">ii.</div>
+        <div class="path-t" data-i18n="path2_t">Advanced Muon Analysis</div>
+        <div class="path-d" data-i18n="path2_d">Multi-week online programme. 3D track reconstruction, muography imaging, and full statistical analysis.</div>
+        <span class="path-badge" data-i18n="path2_b">Coming 2026</span>
+      </div>
+      <div class="path-step">
+        <div class="path-num">iii.</div>
+        <div class="path-t" data-i18n="path3_t">Research Internship</div>
+        <div class="path-d" data-i18n="path3_d">Selected graduates may apply for a supervised research internship with the muon imaging group.</div>
+        <span class="path-badge" data-i18n="path3_b">By application</span>
+      </div>
+      <div class="path-step">
+        <div class="path-num">iv.</div>
+        <div class="path-t" data-i18n="path4_t">University &amp; Beyond</div>
+        <div class="path-d" data-i18n="path4_d">Physics, engineering, data science, and AI — the skills you build here open doors at top universities globally.</div>
+        <span class="path-badge" data-i18n="path4_b">Your future</span>
+      </div>
+    </div>
+  </div>
+  <span class="sec-arrow" aria-hidden="true">→</span>
+</section>
+
+<!-- ── WHO THIS IS FOR ── -->
+<section class="sec">
+  <div class="con">
+    <div class="shead reveal">
+      <div class="eyebrow" data-i18n="for_kicker">Who This Is For</div>
+      <h2 class="stitle" data-i18n-html="for_title">Made for <em>curious</em> Malaysians</h2>
+    </div>
+    <div class="for-grid reveal">
+      <div class="fcard yes">
+        <h3><span class="fmark">✓</span><span data-i18n="for_yes_h">Great fit if you…</span></h3>
+        <ul>
+          <li data-i18n="y1">Are in Form 4–6 or equivalent (ages 15–18)</li>
+          <li data-i18n="y2">Are curious about physics, space, or how the universe works</li>
+          <li data-i18n="y3">Want to try coding in a meaningful real-world context</li>
+          <li data-i18n="y4">Are preparing for university science programmes</li>
+          <li data-i18n="y5">Study SPM Physics or Additional Mathematics</li>
+          <li data-i18n="y6">Want something impressive for JPA / MARA / university applications</li>
+        </ul>
+      </div>
+      <div class="fcard no">
+        <h3><span class="fmark">✕</span><span data-i18n="for_no_h">Not ideal if you…</span></h3>
+        <ul>
+          <li data-i18n="n1">Are looking for SPM exam drill or exam tips</li>
+          <li data-i18n="n2">Want a certificate with no real work involved</li>
+          <li data-i18n="n3">Need advanced university-level physics content</li>
+          <li data-i18n="n4">Cannot attend the full 4.5-hour session live</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <span class="sec-arrow" aria-hidden="true">→</span>
+</section>
+
+<!-- ── PRICING & REGISTRATION ── -->
+<section class="sec alt" id="enrol">
+  <div class="con">
+    <div class="shead reveal">
+      <div class="eyebrow" data-i18n="price_kicker">Enrolment</div>
+      <h2 class="stitle" data-i18n-html="price_title">Simple, <em>honest</em> pricing</h2>
+    </div>
+    <div class="price-grid reveal">
+      <div>
+        <div class="ptag" data-i18n="price_tag">One-time · No subscription</div>
+        <div class="price-line">
+          <div class="pamt"><sup>RM</sup>199</div>
+          <span class="price-orig">RM 499</span>
+          <span class="price-badge" data-i18n="price_disc">Early Bird</span>
+        </div>
+        <div class="pper" data-i18n="price_per">per student · all materials included</div>
+        <ul class="pinc">
+          <li data-i18n="pinc1">4.5-hour live session with a particle physicist</li>
+          <li data-i18n="pinc2">100,000+ real muon events to analyse</li>
+          <li data-i18n="pinc3">Pre-built Python notebook — zero setup required</li>
+          <li data-i18n="pinc4">Underground tunnel dataset for muography experiment</li>
+          <li data-i18n="pinc5">Certificate of completion</li>
+          <li data-i18n="pinc6">30-day recording access after class</li>
+          <li data-i18n="pinc7">WhatsApp support group for questions</li>
+        </ul>
+      </div>
+      <div class="form-panel">
+        <h3 data-i18n="form_title">Register Your Interest</h3>
+        <p class="fdesc" data-i18n="form_desc">Fill in your details below. We will send you a WhatsApp payment link within 24 hours to confirm your spot.</p>
+        <iframe
+          data-tally-src="https://tally.so/embed/vGLP7g?alignLeft=1&hideTitle=1&dynamicHeight=1&backgroundColor=FFFFFF&fontColor=0A1F3C"
+          loading="lazy"
+          width="100%"
+          height="400"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0"
+          title="Register Your Interest — Cosmic Lab"
+          style="border:none;min-height:400px;">
+        </iframe>
+        <p class="pay-note" data-i18n="pay_note">Payment is processed separately via WhatsApp Business after registration. You will receive a product payment link directly.</p>
+      </div>
+    </div>
+  </div>
+  <span class="sec-arrow" aria-hidden="true">→</span>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="sec">
+  <div class="con">
+    <div class="shead reveal">
+      <div class="eyebrow" data-i18n="faq_kicker">FAQ</div>
+      <h2 class="stitle" data-i18n-html="faq_title">Common <em>questions</em></h2>
+    </div>
+    <div class="faq-list reveal">
+      <div class="fi"><button class="fq" onclick="tf(this)" aria-expanded="false"><span data-i18n="faq1_q">Do I need to know Python before joining?</span><em class="ficon" aria-hidden="true">+</em></button><div class="fa" data-i18n="faq1_a">No. The notebook is prepared with step-by-step guidance. You will modify and run code from the start — not write from scratch. By the end of class, you will have your own working analysis script.</div></div>
+      <div class="fi"><button class="fq" onclick="tf(this)" aria-expanded="false"><span data-i18n="faq2_q">Do I need coding experience?</span><em class="ficon" aria-hidden="true">+</em></button><div class="fa" data-i18n="faq2_a">No prior coding needed. The notebook is pre-built with guiding comments. You modify and run code from line one. By the end you will have built your own working physics analysis script.</div></div>
+      <div class="fi"><button class="fq" onclick="tf(this)" aria-expanded="false"><span data-i18n="faq3_q">What equipment do I need?</span><em class="ficon" aria-hidden="true">+</em></button><div class="fa" data-i18n="faq3_a">A laptop or desktop with a stable internet connection and a Google account for Google Colab. No software installation needed. A tablet may work but a keyboard is recommended for typing code.</div></div>
+      <div class="fi"><button class="fq" onclick="tf(this)" aria-expanded="false"><span data-i18n="faq4_q">Is this useful for JPA / MARA scholarship applications?</span><em class="ficon" aria-hidden="true">+</em></button><div class="fa" data-i18n="faq4_a">Yes. You will have completed a genuine data analysis project using real experimental physics data. This is a strong talking point for science and engineering interviews and scholarship applications — far more memorable than typical enrichment programmes.</div></div>
+      <div class="fi"><button class="fq" onclick="tf(this)" aria-expanded="false"><span data-i18n="faq5_q">What language is the class taught in?</span><em class="ficon" aria-hidden="true">+</em></button><div class="fa" data-i18n="faq5_a">Sessions are run in English — the international language of science. The instructor is Malaysian and can explain in Bahasa Malaysia when needed. All written materials are in English.</div></div>
+      <div class="fi"><button class="fq" onclick="tf(this)" aria-expanded="false"><span data-i18n="faq6_q">Can parents join to observe?</span><em class="ficon" aria-hidden="true">+</em></button><div class="fa" data-i18n="faq6_a">Yes — parents are welcome to observe. We ask that students do the coding independently. Many parents find the physics content fascinating too!</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="fin">
+    <div class="ftop">
+      <div>
+        <a href="#" class="logo" aria-label="Cosmic Lab home">
+          <div class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 26 26" fill="none">
+              <line x1="13" y1="1" x2="8" y2="17" stroke="#1D6DE5" stroke-width="1.4"/>
+              <line x1="8" y1="17" x2="4" y2="25" stroke="#1D6DE5" stroke-width="1" opacity=".5"/>
+              <line x1="8" y1="17" x2="12" y2="25" stroke="#1D6DE5" stroke-width="1" opacity=".5"/>
+              <line x1="13" y1="1" x2="19" y2="16" stroke="#0A1F3C" stroke-width="1.4"/>
+              <line x1="19" y1="16" x2="23" y2="25" stroke="#0A1F3C" stroke-width="1" opacity=".5"/>
+              <circle cx="13" cy="1.6" r="1.6" fill="#1D6DE5"/>
+            </svg>
+          </div>
+          <span class="logo-name">Cosmic<span> Lab</span></span>
+        </a>
+        <p class="ftag" data-i18n="footer_tag">Physics education for curious Malaysians.</p>
+      </div>
+      <div class="flinks">
+        <a href="mailto:hello@cosmiclab.my">hello@cosmiclab.my</a>
+        <a href="#how" data-i18n="nav_how">How It Works</a>
+        <a href="#schedule" data-i18n="nav_sched">Schedule</a>
+        <a href="#enrol" data-i18n="nav_cta">Register</a>
+      </div>
+    </div>
+    <div class="fbot">
+      <span class="fcopy">© 2026 Cosmic Lab · cosmiclab.my</span>
+      <span class="fmy">Learn more at cosmiclab.my · Malaysia</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ── STICKY BAR ── -->
+<div class="sticky" id="sticky">
+  <div class="sl" data-i18n="sticky_text">Cosmic Lab · Analyse Cosmic Rays with Python · 1-Day Online</div>
+  <div class="sr">
+    <span class="old">RM 499</span><span class="sp2">RM 199</span>
+    <a href="#enrol" class="ncta" data-i18n="nav_cta">Register Interest</a>
+  </div>
+</div>
+
+
+<!-- ── AI ASSISTANT ── -->
+<button class="chat-fab" id="chatFab" aria-label="Ask Cosmic Lab" aria-expanded="false">
+  <svg viewBox="0 0 26 26" aria-hidden="true"><path d="M22 12a9 9 0 1 0-3.6 7.2L23 21l-1.3-4.5A8.9 8.9 0 0 0 22 12z"/><path d="M8.5 10.5h9M8.5 14h6"/></svg>
+</button>
+<div class="chat-panel" id="chatPanel" role="dialog" aria-label="Cosmic Lab assistant">
+  <div class="chat-head">
+    <svg class="cico" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+      <line x1="13" y1="1" x2="8" y2="17" stroke="#7EB8FF" stroke-width="1.4"/>
+      <line x1="8" y1="17" x2="4" y2="25" stroke="#7EB8FF" stroke-width="1" opacity=".5"/>
+      <line x1="8" y1="17" x2="12" y2="25" stroke="#7EB8FF" stroke-width="1" opacity=".5"/>
+      <line x1="13" y1="1" x2="19" y2="16" stroke="#fff" stroke-width="1.4"/>
+      <line x1="19" y1="16" x2="23" y2="25" stroke="#fff" stroke-width="1" opacity=".5"/>
+      <circle cx="13" cy="1.6" r="1.6" fill="#7EB8FF"/>
+    </svg>
+    <div class="chat-head-t">
+      <div class="ct" id="cwTitle">Ask Cosmic Lab</div>
+      <div class="cs" id="cwSub">AI assistant · EN · BM · 中文</div>
+    </div>
+    <button class="chat-close" id="chatClose" aria-label="Close">×</button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-foot">
+    <input class="chat-in" id="chatIn" type="text" maxlength="500" autocomplete="off">
+    <button class="chat-send" id="chatSend" aria-label="Send">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h13M11 4l6 6-6 6"/></svg>
+    </button>
+  </div>
+  <div class="chat-note" id="cwNote">AI answers may contain mistakes — key facts are on this page.</div>
+</div>
+
+<script src="https://tally.so/widgets/embed.js" async></script>
+<script>
+// Scroll reveal
+const rv=document.querySelectorAll('.reveal');
+const ob=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ob.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+rv.forEach(el=>ob.observe(el));
+// Sticky bar
+const heroEl=document.querySelector('.hero');
+const stky=document.getElementById('sticky');
+window.addEventListener('scroll',()=>{stky.classList.toggle('show',heroEl.getBoundingClientRect().bottom<0);},{passive:true});
+// FAQ accordion
+function tf(btn){
+  const item=btn.parentElement;const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.fi.open').forEach(i=>{i.classList.remove('open');i.querySelector('.fq').setAttribute('aria-expanded','false');});
+  if(!isOpen){item.classList.add('open');btn.setAttribute('aria-expanded','true');}
+}
+</script>
+
+<script>
+// Cosmic ray streaks — hero only, respects reduced motion
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cv=document.getElementById('cosray');
+  const hero=document.querySelector('.hero');
+  const cx=cv.getContext('2d');
+  let W,H,rays=[],running=true;
+  const COLS=['rgba(34,81,255,V)','rgba(29,109,229,V)','rgba(255,122,26,V)'];
+  function resize(){W=cv.width=hero.clientWidth;H=cv.height=hero.clientHeight;}
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function spawn(){
+    const angle=rnd(62,80)*Math.PI/180; // steep downward, like real muons
+    const sp=rnd(1.6,3.4);
+    return{x:rnd(-60,W+60),y:rnd(-140,-20),
+      vx:Math.cos(angle)*sp*(Math.random()<.5?-0.4:0.4),
+      vy:Math.sin(angle)*sp,
+      len:rnd(50,140),op:0,fadeIn:true,maxOp:rnd(.1,.3),
+      col:COLS[Math.floor(Math.random()*COLS.length)],w:rnd(.6,1.3)};
+  }
+  function draw(){
+    if(!running){requestAnimationFrame(draw);return;}
+    cx.clearRect(0,0,W,H);
+    if(rays.length<34&&Math.random()<.12)rays.push(spawn());
+    rays=rays.filter(r=>{
+      r.x+=r.vx;r.y+=r.vy;
+      if(r.fadeIn){r.op=Math.min(r.op+.02,r.maxOp);if(r.op>=r.maxOp)r.fadeIn=false;}
+      else r.op=Math.max(r.op-.008,0);
+      if(r.op<=0||r.y>H+150)return false;
+      const a=Math.atan2(r.vy,r.vx);
+      const ex=r.x-Math.cos(a)*r.len, ey=r.y-Math.sin(a)*r.len;
+      const g=cx.createLinearGradient(ex,ey,r.x,r.y);
+      g.addColorStop(0,r.col.replace('V','0'));
+      g.addColorStop(1,r.col.replace('V',r.op.toFixed(2)));
+      cx.beginPath();cx.moveTo(ex,ey);cx.lineTo(r.x,r.y);
+      cx.strokeStyle=g;cx.lineWidth=r.w;cx.stroke();
+      return true;
+    });
+    requestAnimationFrame(draw);
+  }
+  // pause when hero off-screen
+  new IntersectionObserver(es=>{running=es[0].isIntersecting;}).observe(hero);
+  window.addEventListener('resize',resize);
+  resize();draw();
+})();
+</script>
+
+
+<script>
+// ── AI assistant widget ──
+(function(){
+  const CW_T={
+    en:{title:"Ask Cosmic Lab",sub:"AI assistant · EN · BM · 中文",ph:"Type your question…",
+        hello:"Hi! I can answer questions about the Cosmic Lab masterclass — schedule, price, what students need, or the physics itself. How can I help?",
+        note:"AI answers may contain mistakes — key facts are on this page.",
+        chips:["Do I need coding experience?","What does RM 199 include?","Is this useful for JPA / MARA applications?"]},
+    ms:{title:"Tanya Cosmic Lab",sub:"Pembantu AI · EN · BM · 中文",ph:"Taip soalan anda…",
+        hello:"Hai! Saya boleh menjawab soalan tentang kelas Cosmic Lab — jadual, harga, keperluan pelajar, atau fiziknya sendiri. Apa yang boleh saya bantu?",
+        note:"Jawapan AI mungkin tersilap — fakta utama ada di halaman ini.",
+        chips:["Perlukah pengalaman pengekodan?","Apa yang termasuk dalam RM 199?","Berguna untuk permohonan JPA / MARA?"]},
+    zh:{title:"咨询 Cosmic Lab",sub:"AI 助手 · EN · BM · 中文",ph:"输入你的问题…",
+        hello:"你好！我可以回答有关 Cosmic Lab 大师班的问题——时间安排、价格、学生所需设备，或物理知识本身。需要什么帮助？",
+        note:"AI 回答可能有误——关键信息以本页为准。",
+        chips:["需要编程经验吗？","RM 199 包含什么？","对 JPA / MARA 申请有帮助吗？"]}
+  };
+  const fab=document.getElementById('chatFab'),panel=document.getElementById('chatPanel'),
+        body=document.getElementById('chatBody'),input=document.getElementById('chatIn'),
+        send=document.getElementById('chatSend'),closeB=document.getElementById('chatClose');
+  let history=[],busy=false,started=false;
+  const L=()=>CW_T[document.documentElement.getAttribute('lang')]||CW_T.en;
+
+  function applyLang(){
+    const t=L();
+    document.getElementById('cwTitle').textContent=t.title;
+    document.getElementById('cwSub').textContent=t.sub;
+    document.getElementById('cwNote').textContent=t.note;
+    input.placeholder=t.ph;
+  }
+  new MutationObserver(applyLang).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+  applyLang();
+
+  function add(role,text){
+    const d=document.createElement('div');
+    d.className='cmsg '+role; d.textContent=text;
+    body.appendChild(d); body.scrollTop=body.scrollHeight; return d;
+  }
+  function showChips(){
+    const wrap=document.createElement('div'); wrap.className='chat-chips';
+    L().chips.forEach(q=>{
+      const b=document.createElement('button'); b.className='chip'; b.textContent=q;
+      b.onclick=()=>{wrap.remove(); ask(q);};
+      wrap.appendChild(b);
+    });
+    body.appendChild(wrap); body.scrollTop=body.scrollHeight;
+  }
+  function open(){
+    panel.classList.add('open'); fab.setAttribute('aria-expanded','true');
+    if(!started){started=true; add('bot',L().hello); showChips();}
+    input.focus();
+  }
+  function close(){panel.classList.remove('open'); fab.setAttribute('aria-expanded','false');}
+  fab.addEventListener('click',()=>panel.classList.contains('open')?close():open());
+  closeB.addEventListener('click',close);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+
+  async function ask(text){
+    if(busy||!text.trim())return;
+    busy=true; send.disabled=true;
+    add('user',text);
+    history.push({role:'user',content:text});
+    const typing=add('bot typing','· · ·');
+    try{
+      const r=await fetch('api/chat.php',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({message:text,history:history.slice(0,-1).slice(-8),
+          lang:document.documentElement.getAttribute('lang')||'en'})
+      });
+      const d=await r.json();
+      typing.remove();
+      const reply=(d&&d.reply)?d.reply:L().hello;
+      add('bot',reply);
+      history.push({role:'assistant',content:reply});
+      if(history.length>16)history=history.slice(-16);
+    }catch(e){
+      typing.remove();
+      add('bot',{en:'Sorry — I could not connect just now. Please try again, or email hello@cosmiclab.my.',
+                 ms:'Maaf — sambungan gagal buat masa ini. Sila cuba lagi, atau e-mel hello@cosmiclab.my.',
+                 zh:'抱歉，暂时无法连接。请重试，或发邮件至 hello@cosmiclab.my。'}[document.documentElement.getAttribute('lang')]||'Sorry — please try again.');
+    }
+    busy=false; send.disabled=false; input.focus();
+  }
+  send.addEventListener('click',()=>{const v=input.value; input.value=''; ask(v);});
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){const v=input.value; input.value=''; ask(v);}});
+})();
+</script>
+
+<script>
+const T = {
+  en: {
+    nav_how:"How It Works",nav_sched:"Schedule",nav_price:"Pricing",nav_cta:"Register Interest",
+    hero_badge:"1-Day Online Masterclass · Beginner-Friendly",
+    hero_h1:"Detect <em>cosmic rays</em><br>from space",
+    hero_sub:"Malaysian high schoolers analyse <strong>real muon detector data</strong> using Python. Live proof of Einstein's relativity — right in your browser.",
+    hero_cta:"Register Your Interest",
+    stat_events:"Real Events",stat_hands:"Hands-On",stat_price:"Per Student",stat_age:"Target Age",
+    muon_kicker:"The Science",muon_title:"What <em>are</em> muons?",muon_h3:"Super-particles from space ",
+    muon_p1:"Cosmic rays — high-energy particles from distant stars and supernovae — constantly bombard Earth's upper atmosphere. When they smash into air molecules, they produce a shower of new particles called <strong>muons</strong>.",
+    muon_p2:"Muons travel toward Earth at nearly the speed of light. Their lifespan is just 2.2 millionths of a second — they <em>should</em> decay long before reaching the surface. Yet they arrive in their millions every minute.",
+    muon_relbox:"This is Einstein's Special Relativity in action. At near-light speeds, time slows down for the muon — giving it enough time to complete the journey. Every detection is live proof that time is not absolute.",
+    muon_bm_h3:"Every second, hundreds of muons pass through your body.",
+    muon_bm_p:"In this class, you will catch them.",
+    muon_tag:"Data from real detector",
+    how_kicker:"What You'll Do",how_title:"Real science. <em>Real data.</em> One day.",
+    how_desc:"You won't watch slides. You'll write Python code and make actual measurements with data from a real particle detector — exactly how professional physicists do it.",
+    step1_t:"Meet the cosmic ray muon",step2_t:"Write your first Python analysis",
+    step3_t:"Reconstruct a particle track",step4_t:"Measure the muon flux",
+    step5_t:"Discover the tunnel anomaly",step6_t:"Present your result",
+    step1_d:"Learn what muons are, where they come from, and why physicists at Fermilab and CERN study them. Live Q&A with a real physicist.",
+    step2_d:"Load real detector data, plot hit maps, measure muon rates, and build histograms — in a browser notebook. No setup. No prior coding needed.",
+    step3_d:"Use the same techniques as professional physicists to trace a muon's path through the detector and calculate its direction.",
+    step4_d:"Extract a real physics result — the rate of cosmic ray muons at ground level — and compare it to the theoretical prediction.",
+    step5_d:"Analyse data from an underground tunnel. Can you spot the density change in the rock above from muon counts alone?",
+    step6_d:"Every student presents one finding from their own analysis. Real science ends with sharing discoveries — and so does this class.",
+    det_kicker:"The Detector",det_title:"Built by a <em>particle physicist</em>",
+    det_p:"The data you analyse comes from a real two-scintillator muon detector — the same core technology used in high-energy physics labs worldwide, miniaturised for education and fieldwork.",
+    det_f1:"<strong>Coincidence detection</strong> — a muon is only logged when both scintillator panels register a simultaneous hit, eliminating background noise.",
+    det_f2:"<strong>SiPM photosensors</strong> — silicon photomultipliers convert the faint scintillation flash from each muon hit into an electronic signal.",
+    det_f3:"<strong>100,000+ events logged</strong> — from an underground tunnel, giving you a rich, real dataset with genuine physics to extract.",
+    det_f4:"<strong>Southeast Asia's first</strong> — this data comes from a muon imaging group in the region.",
+    det_note:"You won't just <em>learn about</em> a muon detector. You'll analyse data from one — the same way physicists do at CERN, Fermilab, and KEK!",
+    sched_kicker:"Schedule",sched_title:"Your <em>day</em> in detail",
+    sched_desc:"All sessions are live and interactive. Ask the instructor anything — they're a real particle physicist.",
+    s1_t:"Welcome &amp; Notebook Setup",s2_t:"Cosmic Ray Physics — The 10-Minute Version",
+    s3_t:"Session 1 — First Look at the Data",s4_t:"Rehat ",
+    s5_t:"Session 2 — Track Reconstruction &amp; Tunnel Data",s6_t:"Presentations &amp; Wrap-Up",
+    s1_d:"Google Colab running in your browser — zero installation. Quick intro to the day ahead.",
+    s2_d:"Where muons come from, how they're detected, and why they prove Einstein right. Live Q&A.",
+    s3_d:"Load 100,000+ real muon events. Plot your first histogram. Calculate a muon rate. Your first physics measurement.",
+    s4_d:"Lunch break. Instructor in chat. Go eat some nasi lemak.",
+    s5_d:"Fit a line to a muon track. Switch to the tunnel dataset. Compare rates above vs underground. Find the anomaly.",
+    s6_d:"Share one result. Hear what others found. How muon detectors are used commercially in Malaysia today. Q&A.",
+    quote_text:"Teaching physics for years, I always told students about muons as evidence for relativity — but it remained abstract. Having real detector data to analyse makes the theory tangible in a way no textbook can.",
+    for_kicker:"Who This Is For",for_title:"Made for <em>curious</em> Malaysians",
+    for_yes_h:"✓  Great fit if you…",for_no_h:"✗  Not ideal if you…",
+    y1:"Are in Form 4–6 or equivalent (ages 15–18)",y2:"Are curious about physics, space, or how the universe works",
+    y3:"Want to try coding in a meaningful real-world context",y4:"Are preparing for university science programmes",
+    y5:"Study SPM Physics or Additional Mathematics",y6:"Want something impressive for JPA / MARA / university applications",
+    n1:"Are looking for SPM exam drill or exam tips",n2:"Want a certificate with no real work involved",
+    n3:"Need advanced university-level physics content",n4:"Cannot attend the full 4.5-hour session live",
+    price_kicker:"Enrolment",price_title:"Simple, <em>honest</em> pricing",
+    price_tag:"One-time · No subscription",price_per:"per student · all materials included",
+    pinc1:"4.5-hour live session with a particle physicist",pinc2:"100,000+ real muon events to analyse",
+    pinc3:"Pre-built Python notebook — zero setup required",pinc4:"Underground tunnel dataset for muography experiment",
+    pinc5:"Certificate of completion",pinc6:"30-day recording access after class",pinc7:"WhatsApp support group for questions",
+    form_title:"Register Your Interest",
+    form_desc:"Fill in your details below. We will send you a WhatsApp payment link within 24 hours to confirm your spot.",
+    faq_kicker:"FAQ",faq_title:"Common <em>questions</em>",
+    faq1_q:"Do I need Python experience before joining?",faq2_q:"Do I need coding experience?",
+    faq3_q:"What equipment do I need?",faq4_q:"Is this useful for JPA / MARA scholarship applications?",
+    faq5_q:"What language is the class conducted in?",faq6_q:"Can parents observe the session?",
+    faq1_a:"No prior coding needed. The notebook is pre-built with guiding comments. You modify and run code from line one. By the end you will have built your own working physics analysis script.",
+    faq2_a:"No prior coding needed. The notebook is pre-built with guiding comments. You modify and run code from line one. By the end you will have built your own working physics analysis script.",
+    faq3_a:"A laptop or desktop with a stable internet connection and a Google account for Google Colab. No software installation required. A tablet may work but a keyboard is recommended.",
+    faq4_a:"Yes. You will have completed a genuine data analysis project using real experimental physics data. This is a strong talking point for science and engineering interviews and scholarship applications.",
+    faq5_a:"The session is conducted in English — the language of international science. The instructor is Malaysian and can explain in Bahasa Malaysia if needed.",
+    faq6_a:"Yes — parents are welcome to observe. We ask students to do their own coding independently.",
+    sticky_text:"Cosmic Lab · Analyse Cosmic Rays with Python · 1-Day Online",
+    footer_tag:"Physics education for curious Malaysians.",
+    price_disc:"Early Bird",
+    pay_note:"Payment is processed separately via WhatsApp Business after registration. You will receive a product payment link directly.",
+    pill_lecture:"Lecture",pill_handson:"Hands-On",pill_present:"Presentations",pill_muog:"Muography",
+    ben_kicker:"What You'll Gain",ben_title:"Real skills. Real <em>credentials.</em>",
+    ben_desc:"Every student leaves with tangible outcomes — not just knowledge, but proof of what they can do.",
+    ben1_t:"Certificate of Completion",ben1_d:"A dated certificate signed by a tenured particle physicist — meaningful for university applications, scholarship essays, and SPM portfolio submissions.",
+    ben2_t:"A Working Python Project",ben2_d:"You leave with your own working analysis notebook — real code, real output, real physics. Something you can show interviewers, teachers, and university admissions.",
+    ben3_t:"Real Research Experience",ben3_d:"You will have analysed actual detector data from a scientific experiment — the same type of work done at Fermilab and CERN. That is rare at high school level anywhere in the world.",
+    ben4_t:"Access to a Physicist",ben4_d:"Graduates join a WhatsApp alumni group where you can ask questions, share discoveries, and hear about future programmes directly from the instructor.",
+    ben5_t:"University Application Edge",ben5_d:"JPA, MARA, and top universities look for evidence of genuine curiosity beyond grades. A muon physics analysis is the kind of thing that stands out in a personal statement.",
+    ben6_t:"First Step into Physics Research",ben6_d:"Many students discover after this class that research is something they actually enjoy. This is the first rung on a ladder that can lead to internships, university research, and beyond.",
+    path_kicker:"What's Next",path_title:"Your <em>learning pathway</em>",path_desc:"Cosmic Lab is the starting point. Here is where it can take you.",
+    path1_t:"Cosmic Lab Masterclass",path1_d:"1-day online bootcamp. Python data analysis with real muon detector data.",path1_b:"You are here",
+    path2_t:"Advanced Muon Analysis",path2_d:"Multi-week online programme. 3D track reconstruction, muography imaging, and full statistical analysis.",path2_b:"Coming 2026",
+    path3_t:"Research Internship",path3_d:"Selected graduates may apply for a supervised research internship with the muon imaging group.",path3_b:"By application",
+    path4_t:"University & Beyond",path4_d:"Physics, engineering, data science, and AI — the skills you build here open doors at top universities globally.",path4_b:"Your future",
+  },
+  zh: {
+    nav_how:"课程介绍",nav_sched:"课程时间表",nav_price:"价格",nav_cta:"立即报名",
+    hero_badge:"1日线上大师班 · 零基础友好",
+    hero_h1:"探测来自宇宙的<em>宇宙射线</em>",
+    hero_sub:"马来西亚高中生使用Python分析<strong>真实μ子探测数据</strong>。爱因斯坦相对论的活证明——就在你的浏览器里。",
+    hero_cta:"登记感兴趣",
+    stat_events:"真实事件数",stat_hands:"动手实践",stat_price:"每位学生",stat_age:"适合年龄",
+    muon_kicker:"科学原理",muon_title:"什么是<em>μ子</em>？",muon_h3:"来自太空的超级粒子 ",
+    muon_p1:"宇宙射线——来自遥远星球和超新星的高能粒子——不断轰击地球高层大气。当它们撞击空气分子时，会产生大量新粒子，称为<strong>μ子</strong>。",
+    muon_p2:"μ子以接近光速向地球飞行。它们的寿命仅有220万分之一秒——理论上<em>应该</em>在到达地面之前就已衰变。然而它们每分钟仍有数百万个抵达地面。",
+    muon_relbox:"这正是爱因斯坦狭义相对论的体现。在接近光速时，μ子的时间变慢——给了它足够的时间完成旅程。每一次探测都是时间并非绝对的活证明。",
+    muon_bm_h3:"每一秒，数百个μ子穿过你的身体。",
+    muon_bm_p:"在这堂课里，你将亲手捕获它们。",
+    muon_tag:"真实探测器数据",
+    how_kicker:"你将学到什么",how_title:"真实科学。<em>真实数据。</em>一天完成。",
+    how_desc:"不是看幻灯片。你将编写Python代码，用真实粒子探测器的数据进行实际测量——就像专业物理学家那样。",
+    step1_t:"认识宇宙射线μ子",step2_t:"编写你的第一个Python分析",
+    step3_t:"重建粒子轨迹",step4_t:"测量μ子通量",
+    step5_t:"发现隧道异常",step6_t:"展示你的成果",
+    step1_d:"了解μ子是什么、从哪里来，以及费米实验室和欧洲核子中心的物理学家为什么研究它们。与真实物理学家现场问答。",
+    step2_d:"加载真实探测器数据，绘制命中图，测量μ子速率，制作直方图——在浏览器笔记本中完成。无需安装，无需编程基础。",
+    step3_d:"使用与专业物理学家相同的技术，追踪μ子在探测器中的路径并计算其方向。",
+    step4_d:"提取真实的物理结果——地面宇宙射线μ子速率，并与理论预测进行比较。",
+    step5_d:"分析来自地下隧道的数据。你能仅从μ子计数中发现上方岩石的密度变化吗？",
+    step6_d:"每位学生展示自己分析的一个发现。真正的科学以分享发现结束——本课也是如此。",
+    det_kicker:"探测器",det_title:"由<em>粒子物理学家</em>构建",
+    det_p:"你分析的数据来自真实的双闪烁体μ子探测器——与全球高能物理实验室使用的核心技术相同，为教育和野外工作而小型化。",
+    det_f1:"<strong>符合探测</strong>——只有当两个闪烁体面板同时记录到命中时才记录μ子，消除背景噪声。",
+    det_f2:"<strong>SiPM光敏传感器</strong>——硅光电倍增管将每次μ子命中产生的微弱闪光转换为电信号。",
+    det_f3:"<strong>100,000+事件已记录</strong>——来自地下隧道，为你提供丰富的真实数据集，蕴含真实的物理规律。",
+    det_f4:"<strong>东南亚首个</strong>——这些数据来自该地区的μ子成像研究组。",
+    det_note:"你不只是<em>学习</em>μ子探测器。你将分析来自探测器的数据——与CERN、费米实验室和KEK的物理学家做法相同！",
+    sched_kicker:"课程时间表",sched_title:"你的<em>一天</em>详情",
+    sched_desc:"所有环节均为现场互动。随时向讲师提问——他是真正的粒子物理学家。",
+    s1_t:"欢迎 &amp; 笔记本设置",s2_t:"宇宙射线物理学——10分钟版",
+    s3_t:"第一节——初探数据",s4_t:"午休 ",
+    s5_t:"第二节——轨迹重建与隧道数据",s6_t:"成果展示 &amp; 总结",
+    s1_d:"Google Colab在你的浏览器中运行——零安装。简单介绍当天的课程安排。",
+    s2_d:"μ子从哪里来，如何被探测，以及为什么它们证明了爱因斯坦是对的。现场问答。",
+    s3_d:"加载100,000+真实μ子事件。绘制你的第一个直方图。计算μ子速率。你的第一次物理测量。",
+    s4_d:"午休时间。讲师在聊天室待命。去吃点东西吧。",
+    s5_d:"拟合μ子轨迹直线。切换到隧道数据集。比较地面上下的速率。找到异常。",
+    s6_d:"分享一个成果。听听其他人的发现。了解μ子探测器在马来西亚的商业应用。问答。",
+    quote_text:"教了多年物理，我一直告诉学生μ子是相对论的证据——但始终停留在抽象层面。有了真实的探测器数据来分析，理论变得具体，这是任何教科书都无法做到的。",
+    for_kicker:"适合谁参加",for_title:"专为<em>好奇</em>的马来西亚学生",
+    for_yes_h:"✓  非常适合你，如果你…",for_no_h:"✗  不适合，如果你…",
+    y1:"就读Form 4–6或同等年级（15–18岁）",y2:"对物理、太空或宇宙运作方式充满好奇",
+    y3:"想在有实际意义的情境中尝试编程",y4:"正在准备申请大学理科课程",
+    y5:"正在学习SPM物理或附加数学",y6:"想为JPA/MARA/大学申请增添亮点",
+    n1:"正在寻找SPM考试练习或应试技巧",n2:"想要一份不需要实际努力的证书",
+    n3:"需要大学级别的高级物理内容",n4:"无法全程参加4.5小时的现场课程",
+    price_kicker:"报名",price_title:"简单<em>透明</em>的价格",
+    price_tag:"一次性收费 · 无订阅",price_per:"每位学生 · 含所有材料",
+    pinc1:"与粒子物理学家共4.5小时现场课程",pinc2:"100,000+真实μ子事件供分析",
+    pinc3:"预建Python笔记本——零配置",pinc4:"地下隧道数据集用于μ子成像实验",
+    pinc5:"完成证书",pinc6:"课后30天录播回放",pinc7:"WhatsApp答疑群",
+    form_title:"登记感兴趣",
+    form_desc:"填写您的详细信息。我们将在24小时内通过WhatsApp发送付款链接确认您的名额。",
+    faq_kicker:"常见问题",faq_title:"常见<em>问题</em>",
+    faq1_q:"参加前需要懂Python吗？",faq2_q:"需要编程经验吗？",
+    faq3_q:"需要什么设备？",faq4_q:"这对申请JPA/MARA奖学金有帮助吗？",
+    faq5_q:"课程使用什么语言授课？",faq6_q:"家长可以旁听吗？",
+    faq1_a:"不需要。笔记本已预先构建，附有逐步指导。你将从第一行开始修改和运行代码，而不是从零开始编写。课程结束时，你将拥有自己构建的可运行分析脚本。",
+    faq2_a:"不需要任何编程经验。笔记本已预先构建，附有引导注释。你从第一行开始修改并运行代码。课程结束时，你将构建出自己的物理分析脚本。",
+    faq3_a:"需要一台有稳定网络连接的笔记本或台式机，以及用于Google Colab的谷歌账户。无需安装任何软件。平板电脑可能可用，但建议使用键盘。",
+    faq4_a:"有帮助。你将完成一个使用真实实验物理数据的正式数据分析项目。这是理科和工程类大学面试及奖学金申请中的有力谈资。",
+    faq5_a:"课程以英语授课——国际科学的语言。讲师是马来西亚人，如需要可以用马来语解释。所有书面材料均为英文。",
+    faq6_a:"欢迎家长旁听。我们请学生独立完成编程。很多家长也觉得物理内容很有趣！",
+    sticky_text:"Cosmic Lab · 用Python分析宇宙射线 · 1日线上课程",
+    footer_tag:"为好奇的马来西亚人提供物理教育。",
+    price_disc:"早鸟优惠",
+    pay_note:"付款通过报名后WhatsApp Business单独处理。您将直接收到产品付款链接。",
+    pill_lecture:"讲座",pill_handson:"动手实践",pill_present:"成果展示",pill_muog:"μ子成像",
+    ben_kicker:"你将获得什么",ben_title:"真实技能。真实<em>资历。</em>",
+    ben_desc:"每位学生都能带走实实在在的成果——不只是知识，更是能力的证明。",
+    ben1_t:"结业证书",ben1_d:"由终身制粒子物理学家签名的日期证书——对大学申请、奖学金论文和SPM档案提交都有实际意义。",
+    ben2_t:"可运行的Python项目",ben2_d:"你将带走自己的可运行分析笔记本——真实代码、真实输出、真实物理。可以展示给面试官、教师和大学招生官。",
+    ben3_t:"真实科研经历",ben3_d:"你将分析来自科学实验的真实探测器数据——与费米实验室和欧洲核子中心相同类型的工作。在全球高中生中，这种经历极为罕见。",
+    ben4_t:"与物理学家直接交流",ben4_d:"毕业生加入WhatsApp校友群，可以向讲师直接提问、分享发现，并第一时间了解未来课程。",
+    ben5_t:"大学申请优势",ben5_d:"JPA、MARA及顶尖大学都在寻找超越成绩的真实好奇心证据。μ子物理分析是个人陈述中真正能脱颖而出的内容。",
+    ben6_t:"物理研究的第一步",ben6_d:"许多学生在这堂课后发现自己真的喜欢研究。这是通往实习、大学科研乃至更广阔未来的第一级台阶。",
+    path_kicker:"接下来是什么",path_title:"你的<em>学习路径</em>",path_desc:"Cosmic Lab是起点。以下是它能带你去的地方。",
+    path1_t:"Cosmic Lab大师班",path1_d:"1日线上训练营。用Python分析真实μ子探测器数据。",path1_b:"你在这里",
+    path2_t:"高级μ子分析",path2_d:"多周线上课程。3D轨迹重建、μ子成像及完整统计分析。",path2_b:"2026年即将推出",
+    path3_t:"科研实习",path3_d:"优秀毕业生可申请在μ子成像研究组进行有导师指导的科研实习。",path3_b:"申请制",
+    path4_t:"大学及未来",path4_d:"物理、工程、数据科学和AI——在这里培养的技能将为你打开全球顶尖大学的大门。",path4_b:"你的未来",
+  },
+  ms: {
+    nav_how:"Cara Kerja",nav_sched:"Jadual",nav_price:"Harga",nav_cta:"Daftar Sekarang",
+    hero_badge:"Kelas Induk 1 Hari Dalam Talian · Mesra Pemula",
+    hero_h1:"Kesan <em>Sinar Kosmik</em><br>dari Angkasa",
+    hero_sub:"Pelajar sekolah menengah Malaysia menganalisis <strong>data pengesan muon sebenar</strong> menggunakan Python. Bukti langsung Teori Kerelatifan Einstein — terus di pelayar anda.",
+    hero_cta:"Daftar Minat",
+    stat_events:"Peristiwa Sebenar",stat_hands:"Hands-On",stat_price:"Setiap Pelajar",stat_age:"Umur Sasaran",
+    muon_kicker:"Sains Di Sebaliknya",muon_title:"Apakah itu <em>muon</em>?",muon_h3:"Zarah super dari angkasa ",
+    muon_p1:"Sinar kosmik — zarah bertenaga tinggi dari bintang-bintang jauh dan supernova — sentiasa membombardir atmosfera atas Bumi. Apabila ia menghentam molekul udara, ia menghasilkan hujan zarah baharu yang dipanggil <strong>muon</strong>.",
+    muon_p2:"Muon bergerak menuju Bumi hampir pada kelajuan cahaya. Jangka hayat mereka hanya 2.2 juta saat — mereka <em>sepatutnya</em> reput jauh sebelum mencapai permukaan. Namun mereka tiba dalam jutaan setiap minit.",
+    muon_relbox:"Inilah Teori Kerelatifan Khas Einstein dalam tindakan. Pada kelajuan hampir cahaya, masa melambat bagi muon — memberinya masa yang cukup untuk menamatkan perjalanan. Setiap pengesanan adalah bukti langsung bahawa masa bukanlah mutlak.",
+    muon_bm_h3:"Setiap saat, beratus-ratus muon menembusi badan kamu.",
+    muon_bm_p:"Dalam kelas ini, kamu akan menangkapnya.",
+    muon_tag:"Data dari pengesan sebenar",
+    how_kicker:"Apa Yang Akan Anda Buat",how_title:"Sains sebenar. <em>Data sebenar.</em> Satu hari.",
+    how_desc:"Bukan menonton slaid. Anda akan menulis kod Python dan membuat pengukuran sebenar dengan data dari pengesan zarah sebenar — sama seperti ahli fizik profesional.",
+    step1_t:"Kenali muon sinar kosmik",step2_t:"Tulis analisis Python pertama anda",
+    step3_t:"Rekonstruksi jejak zarah",step4_t:"Ukur fluks muon",
+    step5_t:"Temui anomali terowong",step6_t:"Bentangkan keputusan anda",
+    step1_d:"Pelajari apa itu muon, dari mana datangnya, dan mengapa ahli fizik di Fermilab dan CERN mengkajinya. Soal jawab langsung dengan ahli fizik sebenar.",
+    step2_d:"Muatkan data pengesan sebenar, plot peta hit, ukur kadar muon, dan bina histogram — dalam buku nota pelayar. Tiada persediaan. Tiada pengalaman pengekodan diperlukan.",
+    step3_d:"Gunakan teknik yang sama dengan ahli fizik profesional untuk mengesan laluan muon melalui pengesan dan mengira arahnya.",
+    step4_d:"Ekstrak keputusan fizik sebenar — kadar muon sinar kosmik di aras tanah — dan bandingkan dengan ramalan teori.",
+    step5_d:"Analisis data dari terowong bawah tanah. Bolehkah anda mengesan perubahan ketumpatan batu di atas hanya dari kiraan muon?",
+    step6_d:"Setiap pelajar membentangkan satu penemuan dari analisis mereka sendiri. Sains sebenar berakhir dengan berkongsi penemuan — dan begitu juga kelas ini.",
+    det_kicker:"Pengesan",det_title:"Dibina oleh <em>ahli fizik zarah</em>",
+    det_p:"Data yang anda analisis berasal dari pengesan muon dua-scintillator sebenar — teknologi teras yang sama digunakan di makmal fizik tenaga tinggi di seluruh dunia, dikecilkan untuk tujuan pendidikan dan kerja lapangan.",
+    det_f1:"<strong>Pengesanan kebetulan</strong> — muon hanya direkod apabila kedua-dua panel scintillator mendaftar hit serentak, menghapuskan bunyi latar.",
+    det_f2:"<strong>Penderia foto SiPM</strong> — pengganda foto silikon menukar kilatan scintillation yang samar dari setiap hit muon kepada isyarat elektronik.",
+    det_f3:"<strong>100,000+ peristiwa direkod</strong> — dari terowong bawah tanah, memberi anda set data sebenar yang kaya dengan fizik tulen untuk diekstrak.",
+    det_f4:"<strong>Pertama di Asia Tenggara</strong> — data ini datang dari kumpulan pengimejan muon di rantau ini.",
+    det_note:"Anda bukan sahaja <em>belajar tentang</em> pengesan muon. Anda akan menganalisis data daripadanya — sama seperti ahli fizik di CERN, Fermilab, dan KEK!",
+    sched_kicker:"Jadual",sched_title:"<em>Hari</em> anda secara terperinci",
+    sched_desc:"Semua sesi adalah langsung dan interaktif. Tanya pengajar apa sahaja — mereka adalah ahli fizik zarah sebenar.",
+    s1_t:"Selamat Datang &amp; Persediaan Buku Nota",s2_t:"Fizik Sinar Kosmik — Versi 10 Minit",
+    s3_t:"Sesi 1 — Pandangan Pertama pada Data",s4_t:"Rehat ",
+    s5_t:"Sesi 2 — Rekonstruksi Jejak &amp; Data Terowong",s6_t:"Pembentangan &amp; Rumusan",
+    s1_d:"Google Colab berjalan di pelayar anda — sifar pemasangan. Pengenalan ringkas tentang jadual hari.",
+    s2_d:"Dari mana muon datang, bagaimana ia dikesan, dan mengapa ia membuktikan Einstein betul. Soal jawab langsung.",
+    s3_d:"Muatkan 100,000+ peristiwa muon sebenar. Plot histogram pertama anda. Kira kadar muon. Pengukuran fizik pertama anda.",
+    s4_d:"Rehat makan tengah hari. Pengajar dalam sembang. Pergi makan nasi lemak.",
+    s5_d:"Pasang garis pada jejak muon. Tukar ke set data terowong. Bandingkan kadar di atas dengan bawah tanah. Cari anomalinya.",
+    s6_d:"Kongsi satu keputusan. Dengar apa yang ditemui orang lain. Bagaimana pengesan muon digunakan secara komersial di Malaysia hari ini. Soal jawab.",
+    quote_text:"Mengajar fizik bertahun-tahun, saya sentiasa memberitahu pelajar tentang muon sebagai bukti kerelatifan — tetapi ia kekal abstrak. Dengan data pengesan sebenar untuk dianalisis, teori menjadi nyata seperti yang tidak dapat dilakukan oleh mana-mana buku teks.",
+    for_kicker:"Untuk Siapa",for_title:"Dibuat untuk pelajar Malaysia yang <em>ingin tahu</em>",
+    for_yes_h:"✓  Sesuai untuk anda jika…",for_no_h:"✗  Tidak sesuai jika…",
+    y1:"Berada dalam Tingkatan 4–6 atau setaraf (umur 15–18)",y2:"Ingin tahu tentang fizik, angkasa, atau cara alam semesta berfungsi",
+    y3:"Ingin mencuba pengekodan dalam konteks dunia sebenar yang bermakna",y4:"Sedang bersedia untuk program sains universiti",
+    y5:"Belajar Fizik SPM atau Matematik Tambahan",y6:"Mahukan sesuatu yang membanggakan untuk permohonan JPA / MARA / universiti",
+    n1:"Mencari latihan peperiksaan SPM atau tips exam",n2:"Mahukan sijil tanpa kerja sebenar",
+    n3:"Memerlukan kandungan fizik tahap universiti lanjutan",n4:"Tidak dapat hadir sesi langsung 4.5 jam penuh",
+    price_kicker:"Pendaftaran",price_title:"Harga yang <em>telus</em>",
+    price_tag:"Sekali bayar · Tiada langganan",price_per:"setiap pelajar · semua bahan disertakan",
+    pinc1:"Sesi langsung 4.5 jam dengan ahli fizik zarah",pinc2:"100,000+ peristiwa muon sebenar untuk dianalisis",
+    pinc3:"Buku nota Python pra-bina — sifar persediaan diperlukan",pinc4:"Set data terowong bawah tanah untuk eksperimen muografi",
+    pinc5:"Sijil penyiapan",pinc6:"Akses rakaman 30 hari selepas kelas",pinc7:"Kumpulan sokongan WhatsApp untuk soalan",
+    form_title:"Daftar Minat",
+    form_desc:"Isi maklumat anda di bawah. Kami akan menghantar pautan pembayaran WhatsApp dalam masa 24 jam untuk mengesahkan tempat anda.",
+    faq_kicker:"Soalan Lazim",faq_title:"Soalan <em>Lazim</em>",
+    faq1_q:"Perlukah saya tahu Python sebelum menyertai?",faq2_q:"Perlukah saya ada pengalaman pengekodan?",
+    faq3_q:"Apakah peralatan yang diperlukan?",faq4_q:"Adakah ini berguna untuk permohonan biasiswa JPA / MARA?",
+    faq5_q:"Bahasa apa yang digunakan semasa kelas?",faq6_q:"Boleh ibu bapa menyertai untuk memerhati?",
+    faq1_a:"Tidak perlu. Buku nota telah disediakan dengan panduan langkah demi langkah. Anda akan mengubah dan menjalankan kod dari awal — bukan menulis dari kosong. Menjelang akhir kelas, anda akan mempunyai skrip analisis sendiri yang berfungsi.",
+    faq2_a:"Tiada pengalaman pengekodan diperlukan. Buku nota telah pra-bina dengan ulasan panduan. Anda mengubah dan menjalankan kod dari baris pertama. Pada akhirnya anda akan membina skrip analisis fizik anda sendiri.",
+    faq3_a:"Laptop atau komputer desktop dengan sambungan internet stabil dan akaun Google untuk Google Colab. Tiada pemasangan perisian diperlukan. Tablet mungkin berfungsi tetapi papan kekunci disyorkan.",
+    faq4_a:"Ya. Anda akan telah menyiapkan projek analisis data tulen menggunakan data fizik eksperimen sebenar. Ini adalah titik perbualan yang kuat untuk temuduga sains dan kejuruteraan serta permohonan biasiswa.",
+    faq5_a:"Sesi dijalankan dalam Bahasa Inggeris — bahasa sains antarabangsa. Pengajar adalah rakyat Malaysia dan boleh menjelaskan dalam Bahasa Malaysia jika diperlukan.",
+    faq6_a:"Ya — ibu bapa dialu-alukan untuk memerhati. Kami meminta pelajar melakukan pengekodan secara bebas. Ramai ibu bapa mendapati kandungan fizik itu sangat menarik juga!",
+    sticky_text:"Cosmic Lab · Analisis Sinar Kosmik dengan Python · 1 Hari Dalam Talian",
+    footer_tag:"Pendidikan fizik untuk rakyat Malaysia yang ingin tahu.",
+    price_disc:"Harga Awal",
+    pay_note:"Pembayaran diproses secara berasingan melalui WhatsApp Business selepas pendaftaran. Anda akan menerima pautan pembayaran produk secara langsung.",
+    pill_lecture:"Kuliah",pill_handson:"Hands-On",pill_present:"Pembentangan",pill_muog:"Muografi",
+    ben_kicker:"Apa Yang Anda Akan Perolehi",ben_title:"Kemahiran sebenar. <em>Kelayakan</em> sebenar.",
+    ben_desc:"Setiap pelajar pulang dengan hasil nyata — bukan sekadar pengetahuan, tetapi bukti kemampuan mereka.",
+    ben1_t:"Sijil Penyiapan",ben1_d:"Sijil bertarikh yang ditandatangani oleh ahli fizik zarah bertauliah — bermakna untuk permohonan universiti, esei biasiswa, dan penyerahan portfolio SPM.",
+    ben2_t:"Projek Python Yang Berfungsi",ben2_d:"Anda pulang dengan buku nota analisis sendiri yang berfungsi — kod sebenar, output sebenar, fizik sebenar. Sesuatu yang boleh ditunjukkan kepada penemuduga, guru, dan kemasukan universiti.",
+    ben3_t:"Pengalaman Penyelidikan Sebenar",ben3_d:"Anda akan menganalisis data pengesan sebenar dari eksperimen saintifik — jenis kerja yang sama dilakukan di Fermilab dan CERN. Ini jarang berlaku di peringkat sekolah menengah di mana-mana di dunia.",
+    ben4_t:"Akses kepada Ahli Fizik",ben4_d:"Graduan menyertai kumpulan alumni WhatsApp di mana anda boleh bertanya soalan, berkongsi penemuan, dan mendengar tentang program masa depan terus dari pengajar.",
+    ben5_t:"Kelebihan Permohonan Universiti",ben5_d:"JPA, MARA, dan universiti terkemuka mencari bukti rasa ingin tahu yang tulen melebihi gred. Analisis fizik muon adalah sesuatu yang menonjol dalam pernyataan peribadi.",
+    ben6_t:"Langkah Pertama dalam Penyelidikan Fizik",ben6_d:"Ramai pelajar mendapati selepas kelas ini bahawa penyelidikan adalah sesuatu yang mereka benar-benar nikmati. Ini adalah anak tangga pertama menuju latihan industri, penyelidikan universiti, dan lebih jauh lagi.",
+    path_kicker:"Apa Seterusnya",path_title:"<em>Laluan pembelajaran</em> anda",path_desc:"Cosmic Lab adalah titik permulaan. Inilah ke mana ia boleh membawa anda.",
+    path1_t:"Kelas Induk Cosmic Lab",path1_d:"Bootcamp dalam talian 1 hari. Analisis data Python dengan data pengesan muon sebenar.",path1_b:"Anda di sini",
+    path2_t:"Analisis Muon Lanjutan",path2_d:"Program dalam talian berbilang minggu. Rekonstruksi jejak 3D, pengimejan muografi, dan analisis statistik penuh.",path2_b:"Akan datang 2026",
+    path3_t:"Latihan Penyelidikan",path3_d:"Graduan terpilih boleh memohon latihan penyelidikan berpenyelia dengan kumpulan pengimejan muon.",path3_b:"Melalui permohonan",
+    path4_t:"Universiti & Seterusnya",path4_d:"Fizik, kejuruteraan, sains data, dan AI — kemahiran yang anda bina di sini membuka pintu di universiti terkemuka di seluruh dunia.",path4_b:"Masa depan anda",
+  }
+};
+
+let currentLang = localStorage.getItem('cl_lang') || 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  try{ localStorage.setItem('cl_lang', lang); }catch(e){}
+  document.documentElement.setAttribute('lang', lang);
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (T[lang] && T[lang][key]) el.textContent = T[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (T[lang] && T[lang][key]) el.innerHTML = T[lang][key];
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active',
+      (btn.textContent.trim() === 'EN' && lang === 'en') ||
+      (btn.textContent.trim() === '中文' && lang === 'zh') ||
+      (btn.textContent.trim() === 'BM' && lang === 'ms')
+    );
+  });
+}
+document.addEventListener('DOMContentLoaded', () => setLang(currentLang));
+</script>
+</body>
+</html>
