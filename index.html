@@ -445,6 +445,8 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
 :root[lang="zh"] .form-panel h3,:root[lang="zh"] .step-t,:root[lang="zh"] .benefit-t,:root[lang="zh"] .path-t,
 :root[lang="zh"] .stit,:root[lang="zh"] .fq{font-family:var(--hud),'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif;}
 
+:root[lang="zh"] .hero h1{font-size:clamp(40px,5.4vw,74px);line-height:1.12;}
+
 /* ── Reveal on scroll ── */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease;}
 .reveal.in{opacity:1;transform:none;}
@@ -468,8 +470,11 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
 }
 @media(max-width:680px){
   .nav-links .nl{display:none;}
-  .nav-links{gap:12px;}
-  .ncta{padding:10px 14px;font-size:11px;}
+  .nav-links{gap:10px;}
+  .logo-name,.lang-btn,.ncta{white-space:nowrap;}
+  .logo-name{font-size:14px;}
+  .lang-btn{padding:5px 7px;}
+  .ncta{padding:10px 12px;font-size:10.5px;letter-spacing:.08em;}
   .hero{padding-top:96px;}
   .hstats{grid-template-columns:repeat(2,auto);}
   .hs{padding:14px 18px 0 0;margin-right:18px;}
@@ -484,6 +489,9 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
   .scroll-cue{display:none;}
   .chat-panel{right:16px;height:min(520px,68vh);}
   .sticky.show ~ .chat-fab{bottom:78px;}
+}
+@media(max-width:430px){
+  .nav-links .ncta{display:none;}
   .sticky.show ~ .chat-panel{bottom:146px;}
 }
 </style>
@@ -1071,11 +1079,11 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
     const g=new THREE.Group(); g.position.y=y; if(alongX) g.rotation.y=Math.PI/2;
     const list=[];
     for(let i=0;i<NB;i++){
-      const m=new THREE.MeshStandardMaterial({color:0x0d2f66,emissive:0x0a2a7a,emissiveIntensity:0.35,
-        metalness:0.25,roughness:0.35,transparent:true,opacity:0.62});
+      const m=new THREE.MeshStandardMaterial({color:0x0b2752,emissive:0x0a2a7a,emissiveIntensity:0.3,
+        metalness:0.3,roughness:0.4,transparent:true,opacity:0.58});
       const bar=new THREE.Mesh(barGeo,m);
       bar.position.x=-W/2+BW*(i+0.5);
-      const e=new THREE.LineSegments(edgeGeo,new THREE.LineBasicMaterial({color:0x6E8BFF,transparent:true,opacity:0.55}));
+      const e=new THREE.LineSegments(edgeGeo,new THREE.LineBasicMaterial({color:0x6E8BFF,transparent:true,opacity:0.4}));
       bar.add(e); g.add(bar); list.push({mesh:bar,mat:m,edge:e.material,glow:0});
     }
     rig.add(g); return {group:g,bars:list,alongX};
@@ -1188,7 +1196,7 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
   if(THREE.EffectComposer && THREE.UnrealBloomPass){
     composer=new THREE.EffectComposer(renderer);
     composer.addPass(new THREE.RenderPass(scene,camera));
-    bloom=new THREE.UnrealBloomPass(new THREE.Vector2(256,256),0.95,0.55,0.12);
+    bloom=new THREE.UnrealBloomPass(new THREE.Vector2(256,256),0.72,0.5,0.22);
     composer.addPass(bloom);
   }
 
@@ -1200,8 +1208,10 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
     if(composer){ composer.setPixelRatio(DPR); composer.setSize(w,h); }
     camera.aspect=w/h; camera.updateProjectionMatrix();
     wide=w>1020;
-    rig.position.set(wide?5.6:0, wide?0:3.2, 0);
-    rig.scale.setScalar(wide?1:0.85);
+    rig.position.set(0,0,0);
+    // shift the rendered image: right half on desktop, upper area on mobile
+    if(wide) camera.setViewOffset(w,h,-w*0.25,h*0.19,w,h);
+    else     camera.setViewOffset(w,h,0,h*0.22,w,h);
   }
   window.addEventListener('resize',resize); resize();
 
@@ -1246,11 +1256,11 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
 
     [planeA,planeB].forEach(p=>p.bars.forEach(b=>{
       if(b.glow>0){ b.glow=Math.max(0,b.glow-dt*1.8); }
-      b.mat.emissiveIntensity=0.35+b.glow*2.6;
+      b.mat.emissiveIntensity=0.3+b.glow*2.2;
       b.mat.emissive.setRGB(0.04+b.glow*0.9, 0.16+b.glow*0.55, 0.48-b.glow*0.25);
-      b.edge.opacity=0.55+b.glow*0.45;
+      b.edge.opacity=0.4+b.glow*0.6;
     }));
-    for(let i=rings.length-1;i>=0;i--){ const r=rings[i]; r.life-=dt*1.6; r.m.scale.setScalar(1+(1-r.life)*9); r.m.material.opacity=Math.max(0,r.life);
+    for(let i=rings.length-1;i>=0;i--){ const r=rings[i]; r.life-=dt*1.6; r.m.scale.setScalar(1+(1-r.life)*4.5); r.m.material.opacity=Math.max(0,r.life);
       if(r.life<=0){ rig.remove(r.m); r.m.material.dispose(); rings.splice(i,1);} }
     for(let i=recos.length-1;i>=0;i--){ const r=recos[i]; r.life-=dt*0.42; r.m.material.opacity=Math.max(0,r.life)*0.95;
       if(r.life<=0){ rig.remove(r.m); r.m.geometry.dispose(); r.m.material.dispose(); recos.splice(i,1);} }
@@ -1263,9 +1273,9 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
 
   function render(){
     mx+=(tx-mx)*0.04; my+=(ty-my)*0.04;
-    const az=0.6+t*0.06+mx*0.5, el=0.36-my*0.18, R=wide?24:27;
+    const az=0.6+t*0.05+mx*0.45, el=0.4-my*0.16, R=wide?35:38;
     camera.position.set(Math.sin(az)*Math.cos(el)*R, Math.sin(el)*R+1.5, Math.cos(az)*Math.cos(el)*R);
-    camera.lookAt(rig.position.x*0.55, rig.position.y*0.5, 0);
+    camera.lookAt(0,0.4,0);
     composer ? composer.render() : renderer.render(scene,camera);
   }
 
