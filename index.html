@@ -246,6 +246,48 @@ nav{
 .illus-cap{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--faint);
   margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);}
 
+/* ── Rotatable 3D figures (models built in Blender, shown with three.js) ── */
+.fig3d{padding:0 !important;}
+.v3d{position:relative;aspect-ratio:4/5;max-height:78vh;margin:0 auto;overflow:hidden;cursor:grab;
+  background:radial-gradient(120% 80% at 50% 60%,rgba(34,81,255,.16),transparent 70%);}
+.v3d:active{cursor:grabbing;}
+.v3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;outline:none;}
+.v3d-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .8s ease;pointer-events:none;}
+.v3d.live .v3d-poster{opacity:0;}
+.v3d-labels{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .6s ease .2s;}
+.v3d.live .v3d-labels{opacity:1;}
+.v3l{position:absolute;left:0;top:0;white-space:nowrap;font-family:var(--mono);font-size:10px;letter-spacing:.04em;
+  color:var(--body);padding:2px 6px 2px 12px;background:rgba(3,14,23,.62);border-left:1px solid rgba(180,198,214,.5);
+  will-change:transform;}
+.v3l.left{padding:2px 12px 2px 6px;border-left:0;border-right:1px solid rgba(255,181,71,.7);}
+.v3l::before{content:"";position:absolute;left:-3px;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:var(--body);}
+.v3l.hot{color:var(--cyan);border-color:rgba(0,169,244,.7);} .v3l.hot::before{background:var(--cyan);box-shadow:0 0 8px var(--cyan);}
+.v3l.warm{color:var(--amber);border-color:rgba(255,181,71,.7);} .v3l.warm::before{background:var(--amber);box-shadow:0 0 8px var(--amber);}
+.v3l.tick{background:none;border:0;padding:0 0 0 8px;color:var(--faint);font-size:9px;}
+.v3l.tick::before{display:none;}
+.v3l.left::before{left:auto;right:-3px;}
+.v3l.left.cy{border-right-color:rgba(0,169,244,.7);}
+.v3l.off{opacity:0;}
+.v3d-legend{display:flex;flex-direction:column;gap:8px;padding:20px 22px 16px;border-bottom:1px solid var(--line-soft);}
+.lg{display:flex;align-items:baseline;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.05em;flex-wrap:wrap;}
+.lg i{width:18px;height:2px;align-self:center;flex:none;}
+.lg b{font-weight:500;text-transform:uppercase;letter-spacing:.14em;}
+.lg em{font-style:normal;color:var(--muted);}
+.lg-c i{background:rgba(200,210,222,.75);} .lg-c b{color:var(--ink);opacity:.8;}
+.lg-r i{background:var(--cyan);box-shadow:0 0 8px var(--cyan);} .lg-r b{color:var(--cyan);}
+.v3d-readout{position:absolute;left:18px;top:18px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);pointer-events:none;z-index:2;}
+.v3d-readout b{color:var(--cyan);font-weight:500;margin-left:6px;font-size:13px;letter-spacing:.02em;}
+.v3d-hint{position:absolute;right:14px;bottom:12px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);padding:5px 10px;border:1px solid rgba(0,169,244,.35);
+  border-radius:20px;background:rgba(3,14,23,.55);pointer-events:none;transition:opacity .6s ease;z-index:2;}
+.v3d-hint svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;}
+.v3d.touched .v3d-hint{opacity:0;}
+.v3d-term{padding:14px 22px 0;font-family:var(--mono);font-size:11px;line-height:1.9;color:var(--muted);border-top:1px solid var(--line-soft);}
+.v3d-term .ok{color:var(--cyan);}
+.fig3d .illus-cap{margin:12px 22px 0;padding-bottom:18px;}
+@media (max-width:560px){ .v3l{font-size:9px;} .lg{font-size:9.5px;} .v3d-legend{padding:16px 18px 12px;} }
+
 /* ── Steps ── */
 .steps{padding:6px 26px;}
 .step{display:grid;grid-template-columns:90px 1fr auto;gap:clamp(16px,3vw,40px);
@@ -570,40 +612,30 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
 <section class="sec">
   <div class="con">
     <div class="split reveal">
-      <div class="fig">
-        <svg width="100%" viewBox="0 0 460 330" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <!-- Without relativity -->
-          <text x="0" y="16" font-family="'JetBrains Mono',monospace" font-size="10" fill="rgba(138,162,183,.95)" letter-spacing="2">WITHOUT RELATIVITY</text>
-          <line x1="0" y1="30" x2="460" y2="30" stroke="rgba(230,240,250,0.15)" stroke-width="1"/>
-          <line x1="20" y1="66" x2="150" y2="66" stroke="rgba(230,240,250,0.55)" stroke-width="1.6"/>
-          <circle cx="20" cy="66" r="4" fill="rgba(230,240,250,0.71)"/>
-          <text x="20" y="52" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(230,240,250,0.63)">μ born</text>
-          <path d="M144 58 l14 16 M158 58 l-14 16" stroke="rgba(230,240,250,0.55)" stroke-width="1.4"/>
-          <text x="168" y="70" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(138,162,183,.9)">decays after 2.2 μs — never reaches Earth</text>
-          <line x1="20" y1="98" x2="440" y2="98" stroke="rgba(230,240,250,0.21)" stroke-width="1" stroke-dasharray="2 5"/>
-          <text x="440" y="112" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="rgba(106,132,156,.95)">ground</text>
-
-          <!-- With relativity -->
-          <text x="0" y="158" font-family="'JetBrains Mono',monospace" font-size="10" fill="#00A9F4" letter-spacing="2">WITH SPECIAL RELATIVITY</text>
-          <line x1="0" y1="172" x2="460" y2="172" stroke="rgba(34,81,255,.3)" stroke-width="1"/>
-          <line x1="20" y1="208" x2="420" y2="208" stroke="#00A9F4" stroke-width="1.8"/>
-          <circle cx="20" cy="208" r="4" fill="#00A9F4"/>
-          <text x="20" y="194" font-family="'JetBrains Mono',monospace" font-size="9" fill="#00A9F4">μ born</text>
-          <text x="220" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(0,169,244,.85)">time dilates — the clock slows</text>
-          <rect x="404" y="200" width="32" height="16" stroke="rgba(0,169,244,.75)" stroke-width="1"/>
-          <circle cx="420" cy="208" r="3.6" fill="#FFB547">
-            <animate attributeName="opacity" values="1;.25;1" dur="1.6s" repeatCount="indefinite"/>
-          </circle>
-          <line x1="20" y1="240" x2="440" y2="240" stroke="rgba(230,240,250,0.21)" stroke-width="1" stroke-dasharray="2 5"/>
-          <text x="440" y="254" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="rgba(106,132,156,.95)">ground</text>
-          <text x="20" y="256" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(0,169,244,.9)">reaches the detector ✓</text>
-
-          <!-- terminal output -->
-          <line x1="0" y1="282" x2="460" y2="282" stroke="rgba(230,240,250,0.15)" stroke-width="1"/>
-          <text x="0" y="304" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="rgba(138,162,183,.95)">$ python3 analysis.py — 100,847 events loaded</text>
-          <text x="0" y="324" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#00A9F4">muon flux: 1.04 ± 0.03 cm⁻² min⁻¹ ✓</text>
-        </svg>
-        <p class="illus-cap">Fig. 02 — Why muons reach the ground: your first measurement of the day.</p>
+      <div class="fig fig3d">
+        <div class="v3d-legend" aria-hidden="true">
+            <span class="lg lg-c"><i></i><b data-i18n="r_lg_cls">Without relativity</b><em data-i18n="r_lg_cls2">decays after ~0.66 km</em></span>
+            <span class="lg lg-r"><i></i><b data-i18n="r_lg_rel">With special relativity</b><em data-i18n="r_lg_rel2">clock slows ~25× · reaches the ground</em></span>
+          </div>
+        <div class="v3d" data-model="assets/3d/relativity.glb" data-kind="rel">
+          <img class="v3d-poster" src="assets/3d/relativity.webp" alt="3D model: a cosmic-ray muon born 15 km up reaches a detector on the ground" loading="lazy" width="900" height="1100">
+          <div class="v3d-labels" aria-hidden="true">
+            <span class="v3l" data-at="P_top" data-i18n="r_primary">cosmic-ray proton</span>
+            <span class="v3l" data-at="P_birth" data-i18n="r_birth">μ born · ~15 km</span>
+            <span class="v3l warm left" data-at="P_decay" data-i18n="r_decay">decay</span>
+            <span class="v3l hot" data-at="P_det" data-i18n="r_det">detector ✓</span>
+            <span class="v3l tick" data-at="LBL_r0">0 km</span>
+            <span class="v3l tick" data-at="LBL_r5">5</span>
+            <span class="v3l tick" data-at="LBL_r10">10</span>
+            <span class="v3l tick" data-at="LBL_r15">15</span>
+          </div>
+          <span class="v3d-hint" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M3 10a7 7 0 0 1 12-5l2-2v6h-6l2.4-2.4A5 5 0 1 0 15 12"/></svg><span data-i18n="v3d_hint">Drag to rotate</span></span>
+        </div>
+        <div class="v3d-term">
+          <p>$ python3 analysis.py — 100,847 events loaded</p>
+          <p class="ok">muon flux: 1.04 ± 0.03 cm⁻² min⁻¹ ✓</p>
+        </div>
+        <p class="illus-cap" data-i18n="fig2_cap">Fig. 02 — Why muons reach the ground: your first measurement of the day.</p>
       </div>
       <div class="prose">
         <div class="eyebrow" data-i18n="muon_kicker">The Science</div>
@@ -647,58 +679,20 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
 <section class="sec">
   <div class="con">
     <div class="split reveal">
-      <div class="fig">
-        <svg width="100%" viewBox="0 0 420 440" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <!-- muon track through everything -->
-          <line x1="210" y1="20" x2="210" y2="400" stroke="#00A9F4" stroke-width="1.4" stroke-dasharray="6 5" opacity=".75"/>
-          <text x="222" y="32" font-family="'JetBrains Mono',monospace" font-size="11" fill="#00A9F4">μ</text>
-          <!-- control unit -->
-          <rect x="150" y="60" width="120" height="58" stroke="rgba(230,240,250,0.55)" stroke-width="1.1"/>
-          <text x="140" y="80" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(138,162,183,.95)">control unit</text>
-          <circle cx="168" cy="104" r="3" fill="#00A9F4"><animate attributeName="opacity" values="1;.3;1" dur="1.7s" repeatCount="indefinite"/></circle>
-          <circle cx="182" cy="104" r="3" stroke="rgba(230,240,250,0.55)" stroke-width="1"/>
-          <line x1="200" y1="98" x2="256" y2="98" stroke="rgba(230,240,250,0.25)" stroke-width="1"/>
-          <line x1="200" y1="106" x2="256" y2="106" stroke="rgba(230,240,250,0.25)" stroke-width="1"/>
-          <!-- frame -->
-          <line x1="120" y1="130" x2="300" y2="130" stroke="rgba(230,240,250,0.41)" stroke-width="1.4"/>
-          <line x1="126" y1="130" x2="126" y2="356" stroke="rgba(230,240,250,0.41)" stroke-width="1.4"/>
-          <line x1="294" y1="130" x2="294" y2="356" stroke="rgba(230,240,250,0.41)" stroke-width="1.4"/>
-          <line x1="104" y1="356" x2="148" y2="356" stroke="rgba(230,240,250,0.41)" stroke-width="1.4"/>
-          <line x1="272" y1="356" x2="316" y2="356" stroke="rgba(230,240,250,0.41)" stroke-width="1.4"/>
-          <!-- scintillator A -->
-          <rect x="135" y="176" width="150" height="24" stroke="#00A9F4" stroke-width="1.2"/>
-          <text x="210" y="192" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="rgba(0,169,244,.95)">scintillator A · 150 × 150 mm</text>
-          <!-- spacers -->
-          <line x1="150" y1="200" x2="150" y2="252" stroke="rgba(230,240,250,0.25)" stroke-width="1"/>
-          <line x1="270" y1="200" x2="270" y2="252" stroke="rgba(230,240,250,0.25)" stroke-width="1"/>
-          <!-- scintillator B -->
-          <rect x="135" y="252" width="150" height="24" stroke="#00A9F4" stroke-width="1.2"/>
-          <text x="210" y="268" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="rgba(0,169,244,.95)">scintillator B · 150 × 150 mm</text>
-          <!-- SiPM labels -->
-          <line x1="285" y1="188" x2="322" y2="188" stroke="rgba(230,240,250,0.34)" stroke-width="1"/>
-          <text x="328" y="192" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="rgba(230,240,250,0.63)">SiPM</text>
-          <line x1="285" y1="264" x2="322" y2="264" stroke="rgba(230,240,250,0.34)" stroke-width="1"/>
-          <text x="328" y="268" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="rgba(230,240,250,0.63)">SiPM</text>
-          <!-- coincidence bracket -->
-          <path d="M120 188 h-14 v76 h14" stroke="rgba(0,169,244,.55)" stroke-width="1"/>
-          <text x="98" y="222" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="rgba(0,169,244,.95)">coincidence</text>
-          <text x="98" y="236" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="rgba(138,162,183,.85)">A ∧ B → count</text>
-          <!-- hit pulses -->
-          <circle cx="210" cy="188" r="3.4" fill="#FFB547"><animate attributeName="opacity" values="1;.15;1" dur="1.3s" repeatCount="indefinite"/></circle>
-          <circle cx="210" cy="264" r="3.4" fill="#FFB547"><animate attributeName="opacity" values=".15;1;.15" dur="1.3s" repeatCount="indefinite"/></circle>
-          <!-- USB to laptop -->
-          <path d="M270 89 Q356 89 356 342" stroke="rgba(230,240,250,0.28)" stroke-width="1" stroke-dasharray="3 4"/>
-          <rect x="332" y="342" width="48" height="30" stroke="rgba(230,240,250,0.44)" stroke-width="1"/>
-          <line x1="322" y1="378" x2="390" y2="378" stroke="rgba(230,240,250,0.44)" stroke-width="1.4"/>
-          <text x="356" y="362" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="rgba(0,169,244,.85)">data log</text>
-          <!-- ground + scale -->
-          <line x1="40" y1="400" x2="380" y2="400" stroke="rgba(230,240,250,0.21)" stroke-width="1"/>
-          <line x1="60" y1="424" x2="120" y2="424" stroke="rgba(143,163,181,.6)" stroke-width="1"/>
-          <line x1="60" y1="419" x2="60" y2="429" stroke="rgba(143,163,181,.6)" stroke-width="1"/>
-          <line x1="120" y1="419" x2="120" y2="429" stroke="rgba(143,163,181,.6)" stroke-width="1"/>
-          <text x="132" y="428" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(138,162,183,.9)">150 mm</text>
-        </svg>
-        <p class="illus-cap">Fig. 03 — The two-scintillator muon detector behind your dataset.</p>
+      <div class="fig fig3d">
+        <div class="v3d" data-model="assets/3d/detector.glb" data-kind="det">
+          <img class="v3d-poster" src="assets/3d/detector.webp" alt="3D model of the two-scintillator muon detector: two plastic tiles in an aluminium frame, SiPM readout, control unit and laptop" loading="lazy" width="1000" height="1000">
+          <div class="v3d-readout" aria-hidden="true"><span data-i18n="d_coinc">A∧B coincidences</span> <b class="v3d-count">0</b></div>
+          <div class="v3d-labels" aria-hidden="true">
+            <span class="v3l" data-at="LBL_ctrl" data-i18n="d_ctrl">control unit</span>
+            <span class="v3l hot left cy" data-at="LBL_scA" data-i18n="d_scA">scintillator A</span>
+            <span class="v3l hot left cy" data-at="LBL_scB" data-i18n="d_scB">scintillator B</span>
+            <span class="v3l" data-at="LBL_sipm" data-i18n="d_sipm">SiPM</span>
+            <span class="v3l" data-at="LBL_log" data-i18n="d_log">data log</span>
+          </div>
+          <span class="v3d-hint" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M3 10a7 7 0 0 1 12-5l2-2v6h-6l2.4-2.4A5 5 0 1 0 15 12"/></svg><span data-i18n="v3d_hint">Drag to rotate</span></span>
+        </div>
+        <p class="illus-cap" data-i18n="fig3_cap">Fig. 03 — The two-scintillator muon detector behind your dataset. Tiles are 150 × 150 mm.</p>
       </div>
       <div class="prose det-text">
         <div class="eyebrow" data-i18n="det_kicker">The Detector</div>
@@ -1319,6 +1313,192 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
   });
 })();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+<script>
+/* ═══ Rotatable 3D figures ═══
+   Models are built and lit in Blender (assets/3d/*.glb) with a Cycles render as the
+   poster. three.js swaps the poster for a live, draggable scene once the model loads. */
+(function(){
+  const views=[...document.querySelectorAll('.v3d[data-model]')];
+  if(!views.length) return;
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const okGL=!!(window.THREE && THREE.GLTFLoader && THREE.OrbitControls);
+  if(!okGL) return;                      // posters stay in place
+
+  const C={cyan:0x00A9F4, blue:0x2251FF, amber:0xFFB547, ink:0xE6F0FA};
+  const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');
+    const r=g.createRadialGradient(32,32,0,32,32,32);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.25,'rgba(255,255,255,.55)');
+    r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);})();
+  function pellet(color,size){
+    const g=new THREE.Group();
+    g.add(new THREE.Mesh(new THREE.SphereGeometry(size*.28,16,12),new THREE.MeshBasicMaterial({color})));
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+    sp.scale.set(size*2.6,size*2.6,1); g.add(sp); g.userData.sprite=sp; return g;
+  }
+  const lin=h=>new THREE.Color(h).convertSRGBToLinear();   // r128 treats hex as linear
+  const UNLIT={Screen:1,LED_on:1,MuonRel:1,MuonClassical:1,Primary:1,Decay:1,DetectorGlow:1,Shower:1,LaptopScreen:1};
+
+  function setup(el){
+    const kind=el.dataset.kind;
+    const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    renderer.outputEncoding=THREE.sRGBEncoding;
+    renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=kind==='rel'?.95:1.0;
+    renderer.setClearColor(0x000000,0);
+    const cv=renderer.domElement; cv.setAttribute('aria-hidden','true'); el.insertBefore(cv,el.firstChild);
+    const scene=new THREE.Scene();
+    if(THREE.RoomEnvironment){ const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromScene(new THREE.RoomEnvironment(),0.04).texture; }
+    scene.add(new THREE.HemisphereLight(0x9cc4ff,0x061826,0.55));
+    const key=new THREE.DirectionalLight(0xfff4e8,1.3); key.position.set(-3,5,4); scene.add(key);
+    const rim=new THREE.DirectionalLight(0x4d86ff,1.1); rim.position.set(3,3,-4); scene.add(rim);
+    const cam=new THREE.PerspectiveCamera(kind==='rel'?34:30,1,0.01,500);
+    const ctl=new THREE.OrbitControls(cam,cv);
+    ctl.enableZoom=false; ctl.enablePan=false; ctl.enableDamping=true; ctl.dampingFactor=.08;
+    ctl.rotateSpeed=.7; ctl.autoRotate=!reduce; ctl.autoRotateSpeed=kind==='rel'?.5:.8;
+    ctl.minPolarAngle=Math.PI*.18; ctl.maxPolarAngle=Math.PI*.56;
+    cv.style.touchAction='pan-y';           // vertical swipes still scroll the page
+    let idle=null;
+    ctl.addEventListener('start',()=>{ el.classList.add('touched'); ctl.autoRotate=false; clearTimeout(idle); });
+    ctl.addEventListener('end',()=>{ idle=setTimeout(()=>{ ctl.autoRotate=!reduce; },4000); });
+
+    const labels=[...el.querySelectorAll('.v3l[data-at]')];
+    const anchors={}; let sim=null, ready=false, visible=false, raf=0, last=performance.now();
+    const v=new THREE.Vector3();
+
+    function size(){ const w=el.clientWidth,h=el.clientHeight; if(!w||!h) return; renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); }
+    new ResizeObserver(size).observe(el); size();
+
+    new THREE.GLTFLoader().load(el.dataset.model,(gltf)=>{
+      const root=gltf.scene; scene.add(root);
+      const mats={};
+      root.traverse(o=>{
+        if(o.name) anchors[o.name]=o;
+        if(!o.isMesh) return;
+        const m=o.material, n=m.name;
+        if(n==='Scintillator'){
+          o.material=mats.sc=mats.sc||new THREE.MeshPhysicalMaterial({color:lin(0x3d93ff),roughness:.05,metalness:0,clearcoat:1,clearcoatRoughness:.05,
+            transparent:true,opacity:.62,emissive:lin(0x0a5cff),emissiveIntensity:.6,depthWrite:false});
+          if(o.name==='ScintB'){ o.material=mats.sc.clone(); }
+          const edge=new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,30),new THREE.LineBasicMaterial({color:C.cyan,transparent:true,opacity:.85,toneMapped:false}));
+          o.add(edge); o.userData.edge=edge;
+          o.renderOrder=2;
+        } else if(n==='Air'){
+          o.material=new THREE.MeshBasicMaterial({color:lin(0x3d8bff),transparent:true,opacity:.08,depthWrite:false,side:THREE.DoubleSide});
+          o.renderOrder=3;
+        } else if(UNLIT[n]){
+          const col=(m.emissive&&m.emissive.getHex())?m.emissive.clone():m.color.clone();
+          o.material=new THREE.MeshBasicMaterial({color:col,toneMapped:false});
+          if(n==='MuonClassical'){ o.material.transparent=true; o.material.opacity=.7; }
+        } else if(kind==='rel' && (n==='Rock'||n==='GroundTop')){
+          o.material=new THREE.MeshStandardMaterial({color:lin(n==='Rock'?0x061826:0x0d2a48),roughness:.9,metalness:0,envMapIntensity:.15});
+        } else if(n==='Aluminium'){
+          o.material=new THREE.MeshStandardMaterial({color:lin(0xb4bfcc),roughness:.34,metalness:1,envMapIntensity:.7});
+        } else if(n==='Strata'){
+          o.material=new THREE.MeshBasicMaterial({color:lin(0x1a4a8a)});
+        } else { m.envMapIntensity=kind==='rel'?.25:.55; if(kind==='rel'&&m.metalness!==undefined){ m.metalness=0; } }
+      });
+      // frame the model
+      const box=new THREE.Box3().setFromObject(root), c=box.getCenter(new THREE.Vector3()), sz=box.getSize(new THREE.Vector3());
+      const r=Math.max(sz.x,sz.y,sz.z)*.5;
+      ctl.target.copy(c);
+      const dist=r/Math.sin(THREE.MathUtils.degToRad(cam.fov*.5))*(kind==='rel'?1.18:1.5);
+      const az=kind==='rel'?.62:.72, el0=kind==='rel'?.22:.42;
+      cam.position.set(c.x+dist*Math.sin(az)*Math.cos(el0), c.y+dist*Math.sin(el0), c.z+dist*Math.cos(az)*Math.cos(el0));
+      cam.near=dist/50; cam.far=dist*6; cam.updateProjectionMatrix(); ctl.update();
+      const pool=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:glowTex,color:C.blue,transparent:true,opacity:kind==='det'?.55:.4,depthWrite:false,blending:THREE.AdditiveBlending}));
+      pool.rotation.x=-Math.PI/2; pool.position.set(c.x,box.min.y+.001,c.z); pool.scale.set(sz.x*1.6,sz.z*1.9,1); scene.add(pool);
+      sim=(kind==='det'?detSim:relSim)(scene,anchors,r,el);
+      ready=true; el.classList.add('live'); kick();
+    },undefined,()=>{ cv.remove(); });
+
+    function place(){
+      const w=el.clientWidth,h=el.clientHeight;
+      for(const l of labels){
+        const a=anchors[l.dataset.at]; if(!a){ l.classList.add('off'); continue; }
+        a.getWorldPosition(v); v.project(cam);
+        const off=v.z>1; l.classList.toggle('off',off);
+        const lx=(v.x+1)/2*w, ly=(1-v.y)/2*h-9;
+        l.style.transform=l.classList.contains('left')?`translate(${lx.toFixed(1)}px,${ly.toFixed(1)}px) translateX(-100%)`:`translate(${lx.toFixed(1)}px,${ly.toFixed(1)}px)`;
+      }
+    }
+    function frame(now){
+      raf=0; const dt=Math.min(.05,(now-last)/1000); last=now;
+      ctl.update(); if(sim && !reduce) sim(dt); renderer.render(scene,cam); place();
+      if(visible) raf=requestAnimationFrame(frame);
+    }
+    function kick(){ if(ready && !raf){ last=performance.now(); raf=requestAnimationFrame(frame); } }
+    new IntersectionObserver(es=>{ visible=es[0].isIntersecting; if(visible) kick(); },{threshold:.05}).observe(el);
+    if(reduce && ready) frame(performance.now());
+  }
+
+  /* Detector: a muon every ~1.4 s, near-vertical (cos²θ-ish); tiles flash on each crossing. */
+  function detSim(scene,A,r,el){
+    const sA=A.ScintA, sB=A.ScintB, led=A.LED0, cnt=el.querySelector('.v3d-count');
+    const yA=sA.getWorldPosition(new THREE.Vector3()).y, yB=sB.getWorldPosition(new THREE.Vector3()).y;
+    const half=.072, top=yA+.42, bot=-.01;
+    const p=pellet(C.amber,.03); scene.add(p);
+    const tg=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3()]);
+    const trk=new THREE.Line(tg,new THREE.LineBasicMaterial({color:C.cyan,transparent:true,opacity:0,toneMapped:false})); scene.add(trk);
+    let t=1, a0=new THREE.Vector3(), a1=new THREE.Vector3(), fA=0, fB=0, hitA=false, hitB=false, n=0, gap=.4;
+    const ledOn=led&&led.material.color.clone();
+    function spawn(){
+      const th=Math.min(.55,Math.acos(Math.pow(Math.random(),.33))*.6), ph=Math.random()*Math.PI*2;
+      const x=(Math.random()*2-1)*half*.85, z=(Math.random()*2-1)*half*.85, ymid=(yA+yB)/2;
+      const d=new THREE.Vector3(Math.sin(th)*Math.cos(ph),-Math.cos(th),Math.sin(th)*Math.sin(ph));
+      const k=(top-ymid)/-d.y; a0.set(x-d.x*k, top, z-d.z*k);
+      const k2=(bot-ymid)/d.y; a1.set(x+d.x*k2, bot, z+d.z*k2);
+      t=0; hitA=hitB=false; tg.setFromPoints([a0,a0]);
+    }
+    const inTile=q=>Math.abs(q.x)<.075&&Math.abs(q.z)<.075;
+    const q=new THREE.Vector3();
+    return dt=>{
+      if(t>=1){ gap-=dt; p.visible=false; if(gap<=0){ spawn(); gap=.9+Math.random()*.9; } }
+      else{
+        t=Math.min(1,t+dt/.75); q.lerpVectors(a0,a1,t); p.position.copy(q); p.visible=true;
+        tg.setFromPoints([a0,q]); trk.material.opacity=.9;
+        if(!hitA && q.y<=yA){ hitA=true; if(inTile(q)) fA=1; }
+        if(!hitB && q.y<=yB){ hitB=true; if(inTile(q)){ fB=1; if(fA>0){ n++; el.dataset.n=n; cnt.textContent=n.toLocaleString('en-US'); if(led) led.userData.f=1; } } }
+      }
+      if(t>=1) trk.material.opacity=Math.max(0,trk.material.opacity-dt*.9);
+      fA=Math.max(0,fA-dt*2.2); fB=Math.max(0,fB-dt*2.2);
+      sA.userData.edge.material.opacity=.55+.45*fA; sB.userData.edge.material.opacity=.55+.45*fB;
+      sA.material.emissiveIntensity=.6+2.6*fA; sA.material.opacity=.62+.3*fA;
+      sB.material.emissiveIntensity=.6+2.6*fB; sB.material.opacity=.62+.3*fB;
+      if(led){ led.userData.f=Math.max(0,(led.userData.f||0)-dt*2); led.material.color.copy(ledOn).multiplyScalar(.35+led.userData.f*1.6); }
+    };
+  }
+
+  /* Relativity: proton → collision at 15 km → two muons. The "classical" one dies after cτ ≈ 0.66 km;
+     the relativistic one (γ ≈ 25) reaches the detector. Both move at the same speed — only the clock differs. */
+  function relSim(scene,A,r){
+    const W=n=>A[n].getWorldPosition(new THREE.Vector3());
+    const top=W('P_top'), birth=W('P_birth'), dec=W('P_decay'), det=W('P_det');
+    const pp=pellet(C.amber,.8), pc=pellet(0xd8e2ee,.6), pr=pellet(C.cyan,.8), burst=pellet(C.amber,1.1), hit=pellet(C.cyan,2.0);
+    [pp,pc,pr,burst,hit].forEach(o=>{ o.visible=false; scene.add(o); });
+    const col=A.Collision, dg=A.DetectorA, dg2=A.DetectorB;
+    const Lrel=birth.distanceTo(det), Lcls=birth.distanceTo(dec), v=Lrel/2.8;   // km per second of animation
+    let t=0, period=1.0+2.8+1.6;
+    return dt=>{
+      t=(t+dt)%period;
+      const tp=1.0, tr=t-tp;
+      pp.visible=t<tp; if(pp.visible) pp.position.lerpVectors(top,birth,t/tp);
+      const fc=Math.max(0,1-Math.abs(t-tp)*3); if(col) col.scale.setScalar(.6+fc*1.6);
+      pc.visible=tr>0 && tr*v<Lcls; if(pc.visible) pc.position.lerpVectors(birth,dec,tr*v/Lcls);
+      const tb=tr-Lcls/v; burst.visible=tb>0&&tb<.7; if(burst.visible){ burst.position.copy(dec); const s=1+tb*3; burst.scale.setScalar(s); burst.userData.sprite.material.opacity=1-tb/.7; }
+      pr.visible=tr>0 && tr<2.8; if(pr.visible) pr.position.lerpVectors(birth,det,tr/2.8);
+      const th=tr-2.8; hit.visible=th>0&&th<1; if(hit.visible){ hit.position.copy(det); hit.userData.sprite.material.opacity=1-th; }
+      const k=hit.visible?1+(1-th)*1.2:1; if(dg){ dg.material.color.setHex(C.blue).multiplyScalar(k); }
+    };
+  }
+
+  // Lazy: build each viewer when it comes near the viewport
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); try{ setup(e.target); }catch(err){ console.warn(err); } } }),{rootMargin:'400px 0px'});
+  views.forEach(v=>io.observe(v));
+})();
+
+</script>
 <script src="https://tally.so/widgets/embed.js" async></script>
 <script>
 // Scroll reveal
@@ -1431,6 +1611,23 @@ function tf(btn){
 <script>
 const T = {
   en: {
+    v3d_hint:"Drag to rotate",
+    r_lg_cls:"Without relativity",
+    r_lg_cls2:"decays after ~0.66 km",
+    r_lg_rel:"With special relativity",
+    r_lg_rel2:"clock slows ~25× · reaches the ground",
+    r_primary:"cosmic-ray proton",
+    r_birth:"μ born · ~15 km",
+    r_decay:"decay",
+    r_det:"detector ✓",
+    d_coinc:"A∧B coincidences",
+    d_ctrl:"control unit",
+    d_scA:"scintillator A",
+    d_scB:"scintillator B",
+    d_sipm:"SiPM",
+    d_log:"data log",
+    fig2_cap:"Fig. 02 — Why muons reach the ground: your first measurement of the day.",
+    fig3_cap:"Fig. 03 — The two-scintillator muon detector behind your dataset. Tiles are 150 × 150 mm.",
     nav_how:"How It Works",nav_sched:"Schedule",nav_price:"Pricing",nav_cta:"Register Interest",
     hero_badge:"1-Day Online Masterclass · Beginner-Friendly",
     hero_h1:"Detect <em>cosmic rays</em><br>from space",
@@ -1518,6 +1715,23 @@ const T = {
     path4_t:"University & Beyond",path4_d:"Physics, engineering, data science, and AI — the skills you build here open doors at top universities globally.",path4_b:"Your future",
   },
   zh: {
+    v3d_hint:"拖动旋转",
+    r_lg_cls:"没有相对论",
+    r_lg_cls2:"约 0.66 公里后衰变",
+    r_lg_rel:"狭义相对论",
+    r_lg_rel2:"时钟变慢约 25 倍 · 抵达地面",
+    r_primary:"宇宙线质子",
+    r_birth:"μ 子诞生 · 约 15 公里",
+    r_decay:"衰变",
+    r_det:"探测器 ✓",
+    d_coinc:"A∧B 符合事件",
+    d_ctrl:"控制单元",
+    d_scA:"闪烁体 A",
+    d_scB:"闪烁体 B",
+    d_sipm:"硅光电倍增管",
+    d_log:"数据记录",
+    fig2_cap:"图 02 — μ 子为何能抵达地面：你今天的第一个测量。",
+    fig3_cap:"图 03 — 你所分析数据背后的双闪烁体 μ 子探测器。闪烁体尺寸 150 × 150 毫米。",
     nav_how:"课程介绍",nav_sched:"课程时间表",nav_price:"价格",nav_cta:"立即报名",
     hero_badge:"1日线上大师班 · 零基础友好",
     hero_h1:"探测来自宇宙的<em>宇宙射线</em>",
@@ -1605,6 +1819,23 @@ const T = {
     path4_t:"大学及未来",path4_d:"物理、工程、数据科学和AI——在这里培养的技能将为你打开全球顶尖大学的大门。",path4_b:"你的未来",
   },
   ms: {
+    v3d_hint:"Seret untuk putar",
+    r_lg_cls:"Tanpa relativiti",
+    r_lg_cls2:"mereput selepas ~0.66 km",
+    r_lg_rel:"Dengan relativiti khas",
+    r_lg_rel2:"jam perlahan ~25× · sampai ke bumi",
+    r_primary:"proton sinar kosmik",
+    r_birth:"μ terhasil · ~15 km",
+    r_decay:"reputan",
+    r_det:"pengesan ✓",
+    d_coinc:"Kebetulan A∧B",
+    d_ctrl:"unit kawalan",
+    d_scA:"sintilator A",
+    d_scB:"sintilator B",
+    d_sipm:"SiPM",
+    d_log:"log data",
+    fig2_cap:"Rajah 02 — Mengapa muon sampai ke bumi: ukuran pertama anda hari ini.",
+    fig3_cap:"Rajah 03 — Pengesan muon dua-sintilator di sebalik set data anda. Jubin bersaiz 150 × 150 mm.",
     nav_how:"Cara Kerja",nav_sched:"Jadual",nav_price:"Harga",nav_cta:"Daftar Sekarang",
     hero_badge:"Kelas Induk 1 Hari Dalam Talian · Mesra Pemula",
     hero_h1:"Kesan <em>Sinar Kosmik</em><br>dari Angkasa",
