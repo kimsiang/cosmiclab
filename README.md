@@ -7,6 +7,9 @@ Landing page for **Cosmic Lab** — a one-day online masterclass where Malaysian
 | Path | Purpose |
 |---|---|
 | `index.html` | Single-file landing page: trilingual (EN / BM / 中文), ice-blue theme, Tally registration embed, AI chat widget |
+| `sample-lesson.html` | Free 30-minute sample lesson: editable Python cells that run in the browser (Pyodide), with an Open-in-Colab link |
+| `lesson/` | Lesson source (`lesson_cells.py`), builder, Colab notebook, simulated dataset and its generator |
+| `assets/3d/` | Blender-built 3D models and poster renders for the rotatable figures |
 | `api/chat.php` | PHP proxy between the chat widget and the Claude API — grounding prompt, per-IP rate limit, trilingual fallbacks, mbstring polyfill |
 | `claude_config.sample.php` | Template for the API key file |
 | `setup_guide.html` | Six-page install guide for the AI assistant on cPanel |

@@ -288,6 +288,10 @@ nav{
 .fig3d .illus-cap{margin:12px 22px 0;padding-bottom:18px;}
 @media (max-width:560px){ .v3l{font-size:9px;} .lg{font-size:9.5px;} .v3d-legend{padding:16px 18px 12px;} }
 
+.try-strip{display:flex;align-items:center;justify-content:space-between;gap:24px 40px;flex-wrap:wrap;margin-top:34px;padding:26px 28px;
+  border:1px solid var(--edge);clip-path:var(--clip);background:linear-gradient(110deg,rgba(34,81,255,.22),rgba(0,169,244,.06) 70%);}
+.try-t{font-family:var(--hud);font-weight:700;font-size:21px;color:var(--ink);margin-bottom:6px;}
+.try-d{font-size:14.5px;color:var(--muted);max-width:560px;}
 /* ── Steps ── */
 .steps{padding:6px 26px;}
 .step{display:grid;grid-template-columns:90px 1fr auto;gap:clamp(16px,3vw,40px);
@@ -560,6 +564,7 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
       <a href="#how" class="nl" data-i18n="nav_how">How It Works</a>
       <a href="#schedule" class="nl" data-i18n="nav_sched">Schedule</a>
       <a href="#enrol" class="nl" data-i18n="nav_price">Pricing</a>
+      <a href="sample-lesson.html" class="nl" data-i18n="nav_try">Free Lesson</a>
       <div class="lang-sw" role="group" aria-label="Language">
         <button class="lang-btn active" onclick="setLang('en')">EN</button>
         <span class="lang-sep">·</span>
@@ -583,7 +588,7 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
       <p class="hero-sub" data-i18n-html="hero_sub">Malaysian high schoolers analyse <strong>real muon detector data</strong> using Python. Live proof of Einstein's relativity — right in your browser.</p>
       <div class="hero-ctas">
         <a href="#enrol" class="btn-p" data-i18n="hero_cta">Register Your Interest</a>
-        <a href="#how" class="btn-s" data-i18n="nav_how">How It Works</a>
+        <a href="sample-lesson.html" class="btn-s" data-i18n="hero_try">Try a Free Lesson</a>
       </div>
       <div class="hstats">
         <div class="hs"><span class="hsv">100,000+</span><span class="hsl" data-i18n="stat_events">Real Events</span></div>
@@ -670,6 +675,11 @@ footer{padding:60px 0 30px;border-top:1px solid var(--edge);background:linear-gr
       <div class="step"><div class="step-n">04</div><div><div class="step-t" data-i18n="step4_t">Measure the muon flux</div><div class="step-d" data-i18n="step4_d">Extract a real physics result — the rate of cosmic ray muons at ground level — and compare it to the theoretical prediction.</div></div><span class="step-tag">Experimental Physics</span></div>
       <div class="step"><div class="step-n">05</div><div><div class="step-t" data-i18n="step5_t">Discover the tunnel anomaly</div><div class="step-d" data-i18n="step5_d">Analyse data from an underground tunnel. Can you spot the density change in the rock above from muon counts alone?</div></div><span class="step-tag">Muography</span></div>
       <div class="step"><div class="step-n">06</div><div><div class="step-t" data-i18n="step6_t">Present your result</div><div class="step-d" data-i18n="step6_d">Every student presents one finding from their own analysis. Real science ends with sharing discoveries — and so does this class.</div></div><span class="step-tag">Communication</span></div>
+    </div>
+    <div class="try-strip reveal">
+      <div><div class="try-t" data-i18n="try_t">Try Steps 02 and 04 now, free</div>
+      <p class="try-d" data-i18n="try_d">A 30-minute sample lesson: count muons in detector data, measure their flux, and test Einstein's relativity. Python runs in your browser, nothing to install.</p></div>
+      <a href="sample-lesson.html" class="btn-p" data-i18n="try_cta">Start the sample lesson</a>
     </div>
   </div>
   <span class="sec-arrow" aria-hidden="true">→</span>
@@ -1611,6 +1621,11 @@ function tf(btn){
 <script>
 const T = {
   en: {
+    nav_try:"Free Lesson",
+    hero_try:"Try a Free Lesson",
+    try_t:"Try Steps 02 and 04 now, free",
+    try_d:"A 30-minute sample lesson: count muons in detector data, measure their flux, and test Einstein’s relativity. Python runs in your browser, nothing to install.",
+    try_cta:"Start the sample lesson",
     v3d_hint:"Drag to rotate",
     r_lg_cls:"Without relativity",
     r_lg_cls2:"decays after ~0.66 km",
@@ -1715,6 +1730,11 @@ const T = {
     path4_t:"University & Beyond",path4_d:"Physics, engineering, data science, and AI — the skills you build here open doors at top universities globally.",path4_b:"Your future",
   },
   zh: {
+    nav_try:"免费试课",
+    hero_try:"免费试一课",
+    try_t:"免费体验第 02、04 步",
+    try_d:"30 分钟试听课：从探测器数据中数出 μ 子、测量通量，并验证爱因斯坦的相对论。Python 直接在浏览器中运行，无需安装。",
+    try_cta:"开始试听课",
     v3d_hint:"拖动旋转",
     r_lg_cls:"没有相对论",
     r_lg_cls2:"约 0.66 公里后衰变",
@@ -1819,6 +1839,11 @@ const T = {
     path4_t:"大学及未来",path4_d:"物理、工程、数据科学和AI——在这里培养的技能将为你打开全球顶尖大学的大门。",path4_b:"你的未来",
   },
   ms: {
+    nav_try:"Kelas Percuma",
+    hero_try:"Cuba Kelas Percuma",
+    try_t:"Cuba Langkah 02 dan 04 sekarang, percuma",
+    try_d:"Pelajaran contoh 30 minit: kira muon dalam data pengesan, ukur fluksnya, dan uji relativiti Einstein. Python berjalan dalam pelayar anda, tiada pemasangan.",
+    try_cta:"Mula pelajaran contoh",
     v3d_hint:"Seret untuk putar",
     r_lg_cls:"Tanpa relativiti",
     r_lg_cls2:"mereput selepas ~0.66 km",
